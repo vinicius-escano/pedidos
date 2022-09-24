@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Caixa</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg bg-success navbar-light ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-size: 30px;"><b>Brand</b></a>
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
+                       data-mdb-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">Action</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Another action</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row me-1">
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a>
+                </li>
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
+                </li>
+            </ul>
+
+            <form class="w-auto">
+                <input type="search" class="form-control" placeholder="Type query" aria-label="Search">
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-3" style="margin-left: 0px; padding-right: 50%;">
+    <div class="menuboxborder">
+        <form method="post" action="/buscarelacaocaixa">
+            <div>
+                <p>Informe um período</p>
+                <label>Data Inicio</label>
+                <input type="date" name="dataInicio" id="dataInicio">
+                <label>Data Fim</label>
+                <input type="date" name="dataInicio" id="dataFim">
+                <button type="submit" th:href="@{'/buscarelacaocaixa}" id="buscaCaixa" name="buscaCaixa"></button>
+            </div>
+        </form>
+        <div>
+            <p>Entrada (Vendas)</p>
+            <table class="table">
+                <tr>
+                    <th>Código Venda</th>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                </tr>
+                <tr data-th-each="venda : ${vendas}">
+                    <td th:text="${venda.codigo}">0001</td>
+                    <td th:text="${venda.nome}">Ademar</td>
+                    <td th:text="${venda.valor}">123.456.789-10</td>
+                    <td th:text="${venda.cadastrado}">123.456.789-10</td>
+                </tr>
+            </table>
+            <p>Valor Total de Vendas: <span></span></p>
+            <br><br>
+            <p>Saida (Compras)</p>
+            <table class="table">
+                <tr>
+                    <th>Código Compra</th>
+                    <th>Fornecedor</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                </tr>
+                <tr data-th-each="compra : ${compras}">
+                    <td th:text="${compra.codigo}">0001</td>
+                    <td th:text="${compra.nome}">Ademar</td>
+                    <td th:text="${compra.valor}">123.456.789-10</td>
+                    <td th:text="${compra.cadastrado}">123.456.789-10</td>
+                </tr>
+            </table>
+            <p>Valor Total de Compras: <span></span></p>
+        </div>
+    </div>
+</div>
+</body>
+
+
+</html>

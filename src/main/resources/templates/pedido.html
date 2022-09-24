@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Vender</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg bg-success navbar-light ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-size: 30px;"><b>Brand</b></a>
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
+                       data-mdb-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">Action</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Another action</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row me-1">
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a>
+                </li>
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
+                </li>
+            </ul>
+
+            <form class="w-auto">
+                <input type="search" class="form-control" placeholder="Type query" aria-label="Search">
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-3">
+    <div class="boxborder">
+        <form th:object="${pedido}" th:action="@{/efetivar}" method="post">
+            <div class="text-center">
+                <label class="form-labels">Descrição: </label>
+                <input class="form-inputs" id="descricaoItem" name="descricaoItem" style="width: 70px">
+                <button class="btn-primary btn" type="submit" id="buscaItem" name="buscaItem">Buscar</button>
+            </div>
+            <div>
+                <h1 class="text-center mt-5">Carrinho</h1>
+                <div>
+                    <table class="table text-center">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor Unit.</th>
+                            <th>Estoque Disponível</th>
+                            <th>Qtd Sol.</th>
+                            <th>Adicionar ao Pedido</th>
+                        </tr>
+                        <tr th:each="produto, stat : ${itensEncontrados}" id="itensEncontrados">
+                            <td th:text="${itensEncontrados[__${stat.index}__].nomeDescricao}"></td>
+                            <td th:text="${#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorVenda)}"></td>
+                            <td th:text="${itensEncontrados[__${stat.index}__].quantidadeDisponivel}"></td>
+                            <td><input class="form-inputs" id="quantidadeSolicitada" name="quantidadeSolicitada"></td>
+                            <td>
+                                <button class="btn btn-primary" id="addItem" name="addItem"
+                                        type="submit" th:value="${itensEncontrados[__${stat.index}__].id}">+
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!--<div>
+                    <label class="form-labels"> Sub-Total: <span
+                            th:text="*{#numbers.formatCurrency(valorTotal)}"> </span></label>
+                </div>-->
+                <div class="text-center">
+                    <button class="btn btn-primary text-center">Fechar Pedido</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+
+
+</html>
+<!--
+
+<table class="table text-center">
+    <tr>
+        <th>Nº</th>
+        <th>Codigo</th>
+        <th>Descrição</th>
+        <th>Qtd Sol.</th>
+        <th>Valor Unit.</th>
+        <th>Valor Total.</th>
+        <th>Estoque Disponível</th>
+        <th></th>
+    </tr>
+    <tr th:each="produto, stat : *{itensEncontrados}" id="itensEncontrados">
+        <td th:text="(${stat.index} + 1)"></td>
+        <td th:text="*{itensEncontrados[__${stat.index}__].codigo}"></td>
+        <td th:text="*{itensEncontrados[__${stat.index}__].descricao}"></td>
+        <td th:text="*{itensEncontrados[__${stat.index}__].quantidadeVenda}"></td>
+        <td th:text="*{#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valor)}"></td>
+        <td th:text="*{#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorTotalEmVenda)}"></td>
+        <td th:text="*{itensEncontrados[__${stat.index}__].quantidade}"></td>
+        <td>
+            <button class="btn btn-danger" id="removeItemNumero" name="removeItemNumero"
+                    type="submit" th:value="${stat.index}">Remover
+            </button>
+        </td>
+    </tr>
+</table>-->
