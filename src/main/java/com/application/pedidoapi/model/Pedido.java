@@ -26,6 +26,6 @@ public class Pedido {
 
     @OneToMany
     @JoinColumn(name = "codigo_produto", foreignKey = @ForeignKey(name = "fk_item_pedido"))
-    private List<PedidoItem> itens = new ArrayList<>();
+    private List<PedidoItem> itensPedido = new ArrayList<>();
 
 }

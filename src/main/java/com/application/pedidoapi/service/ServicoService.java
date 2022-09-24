@@ -20,4 +20,8 @@ public class ServicoService {
     public List<Servico> findAll(){
         return servicoRepository.findAll();
     }
+
+    public List<Servico> findByDescricao(String descricao){
+        return servicoRepository.findAllByDescricao(descricao);
+    }
 }

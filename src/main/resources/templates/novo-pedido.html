@@ -3,13 +3,23 @@
 
 <head>
     <title>Vender</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-reboot.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-grid.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-utilities.css">
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
 </head>
+
+<script>
+    function buscaItens(descricao, tipoItem){
+        window.location.href = '/pedido/buscaitem?descricao=' + descricao + '&tipo=' + tipoItem;
+    }
+    function adicionaItem(index, quantidade) {
+        window.location.href = window.document.location.origin + '/pedido/addprodutoservico?index=' + index + '&qtde=' + quantidade;
+    }
+
+</script>
 
 <body>
 <nav class="navbar navbar-expand-lg bg-success navbar-light ">
@@ -65,17 +75,25 @@
 
 <div class="container mt-3">
     <div class="boxborder">
-        <form th:object="${pedido}" th:action="@{/efetivar}" method="post">
+        <form th:object="${pedido}" th:action="@{/pedido/efetivar}" method="post">
+            <select id="tipoItem">
+                <option value="produto">Produto</option>
+                <option value="servico">Serviço</option>
+            </select>
             <div class="text-center">
                 <label class="form-labels">Descrição: </label>
                 <input class="form-inputs" id="descricaoItem" name="descricaoItem" style="width: 70px">
-                <button class="btn-primary btn" type="submit" id="buscaItem" name="buscaItem">Buscar</button>
+                <button class="btn-primary btn" type="button"
+                        th:attr="onclick=|buscaItens(document.getElementById('descricaoItem').value, document.getElementById('tipoItem').value)|"
+                        id="buscaItem" name="buscaItem">Buscar
+                </button>
             </div>
             <div>
-                <h1 class="text-center mt-5">Carrinho</h1>
                 <div>
+                    <h4 class="text-center mt-5">Itens Disponíveis</h4>
                     <table class="table text-center">
                         <tr>
+                            <th>Codigo</th>
                             <th>Descrição</th>
                             <th>Valor Unit.</th>
                             <th>Estoque Disponível</th>
@@ -83,13 +101,44 @@
                             <th>Adicionar ao Pedido</th>
                         </tr>
                         <tr th:each="produto, stat : ${itensEncontrados}" id="itensEncontrados">
+                            <td th:text="${#strings.substring(itensEncontrados[__${stat.index}__].id, 0,8)}"></td>
                             <td th:text="${itensEncontrados[__${stat.index}__].nomeDescricao}"></td>
                             <td th:text="${#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorVenda)}"></td>
                             <td th:text="${itensEncontrados[__${stat.index}__].quantidadeDisponivel}"></td>
-                            <td><input class="form-inputs" id="quantidadeSolicitada" name="quantidadeSolicitada"></td>
+                            <td><input class="form-inputs qtdeSolicitada" id="qtdeSolicitada" name="qtdeSolicitada">
+                            </td>
                             <td>
                                 <button class="btn btn-primary" id="addItem" name="addItem"
-                                        type="submit" th:value="${itensEncontrados[__${stat.index}__].id}">+
+                                        type="button"
+                                        th:attr="onclick=|adicionaItem(${stat.index}, document.getElementsByClassName('qtdeSolicitada')[${stat.index}].value)|">
+                                    +
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <h2 class="text-center mt-5">Carrinho</h2>
+                    <table class="table text-center">
+                        <tr>
+                            <th></th>
+                            <th>Tipo</th>
+                            <th>Codigo</th>
+                            <th>Descrição</th>
+                            <th>Valor Unit.</th>
+                            <th>Qtd Sol.</th>
+                            <th>Total item</th>
+                            <th>Remover do Pedido</th>
+                        </tr>
+                        <tr th:each="itemPedido, stat : *{itensPedido}" id="itens">
+                            <td th:text="(${stat.index} + 1)"></td>
+                            <td th:text="${#strings.substring(#object.itensPedido[__${stat.index}__].produto.id, 0, 8)}"></td>
+                            <td th:text="${#object.itensPedido[__${stat.index}__].produto.tipo}"></td>
+                            <td th:text="${#object.itensPedido[__${stat.index}__].produto.nomeDescricao}"></td>
+                            <td th:text="${#numbers.formatCurrency(itensPedido[__${stat.index}__].valorPorUnidadeCobrada)}"></td>
+                            <td th:text="${itensPedido[__${stat.index}__].quantidadeSolicitada"></td>
+                            <td th:text="${#numbers.formatCurrency(itensPedido[__${stat.index}__].valorTotal)}"></td>
+                            <td>
+                                <button class="btn btn-primary" id="removeItem" name="removeItem"
+                                        type="button" th:attr="onclick=|remove(${stat.index})|">-
                                 </button>
                             </td>
                         </tr>
