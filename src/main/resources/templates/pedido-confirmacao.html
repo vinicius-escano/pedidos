@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Confirmação</title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
+</head>
+
+<script>
+    function aplicarDesconto(perc) {
+        window.location.href = window.document.location.origin + '/pedido/aplicadesconto?perc=' + perc;
+    }
+</script>
+
+<body>
+<nav class="navbar navbar-expand-lg bg-success navbar-light ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-size: 30px;"><b>Brand</b></a>
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
+                       data-mdb-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">Action</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Another action</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row me-1">
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a>
+                </li>
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
+                </li>
+            </ul>
+
+            <form class="w-auto">
+                <input type="search" class="form-control" placeholder="Type query" aria-label="Search">
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-3">
+    <div class="boxborder text-center">
+        <form th:object="${pedido}" th:action="@{/pedido/confirmapedido}" method="post">
+            <table class="table text-center">
+                <tr>
+                    <th>Nº</th>
+                    <th>Codigo</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Valor Unit.</th>
+                    <th>Qtd Sol.</th>
+                    <th>Total item</th>
+                </tr>
+                <tr th:each="itemPedido, stat : ${pedido.itensPedido}" id="itens">
+                    <td th:text="(${stat.index} + 1)"></td>
+                    <td th:text="${#strings.substring(itemPedido.produto.id, 0, 8)}"></td>
+                    <td th:text="${itemPedido.produto.tipo}"></td>
+                    <td th:text="${itemPedido.produto.nomeDescricao}"></td>
+                    <td th:text="${#numbers.formatCurrency(itemPedido.produto.valorVenda)}"></td>
+                    <td th:text="${itemPedido.quantidadeSolicitada}"></td>
+                    <td th:text="${#numbers.formatCurrency(itemPedido.valorTotal)}"></td>
+                </tr>
+            </table>
+            <div>
+                <label>Produtos: <span th:text="${#numbers.formatCurrency(pedido.valorProdutos)}"></span></label><br>
+                <label>Servicos: <span th:text="${#numbers.formatCurrency(pedido.valorServicos)}"></span></label>
+            </div>
+
+            <div id="aplicaDesconto">
+                <div th:if="*{desconto} == 0.0">
+                    <label>% de desconto</label>
+                    <input class="form-inputs" id="percDesconto" name="percDesconto">
+                    <button type="button" class="btn btn-primary" id="calculaDesconto" name="calculaDesconto" th:attr="onclick=|aplicarDesconto(document.getElementById('percDesconto').value)|">Aplicar
+                        Desconto
+                    </button>
+                    <p>Atenção: Aplica desconto sobre o valor total dos produtos somente!</p>
+                </div>
+                <div th:if="*{desconto} > 0.0">
+                    <br>
+                    <p>Aplicado desconto de <span th:text="*{desconto}"></span>% sobre o valor de <span th:text="${#numbers.formatCurrency(pedido.valorProdutos)}"></span></p>
+                    <a type="button" class="btn btn-danger" id="removeDesconto" name="removeDesconto" th:href="@{/pedido/removerdesconto}">Remover
+                        Desconto
+                    </a>
+                </div>
+            </div>
+            <div class="mt-5">
+                <label class="form-labels"> Total: <span
+                        th:text="*{#numbers.formatCurrency(valorTotal)}"></span></label>
+            </div>
+            <div>
+                <button class="btn btn-primary" id="confirmar" name="confirmar">Confirmar</button>
+                <button class="btn btn-primary" id="cancelar" name="cancelar">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+
+</html>

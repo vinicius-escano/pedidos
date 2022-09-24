@@ -1,5 +1,6 @@
 package com.application.pedidoapi.service;
 
+import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.Produto;
 import com.application.pedidoapi.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,17 @@ public class ProdutoService {
 
     public List<Produto> findByDescricao(String descricao){
         return produtoRepository.findByDescricao(descricao);
+    }
+
+    public void alteraEstoque(Pedido pedido) {
+        pedido.getItensPedido().stream().forEach(item ->{
+            Optional<Produto> opProduto = produtoRepository.findById(item.getProduto().getId());
+            if(opProduto.isPresent()) {
+                if (!(item.getQuantidadeSolicitada() > opProduto.get().getQuantidadeDisponivel())) {
+                    opProduto.get().setQuantidadeDisponivel(opProduto.get().getQuantidadeDisponivel() - item.getQuantidadeSolicitada());
+                    produtoRepository.save(opProduto.get());
+                }
+            }
+        });
     }
 }

@@ -11,17 +11,32 @@
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
 </head>
 
+
+<body>
 <script>
+    $(window).ready(function() {
+        $("#form-id").on("keypress", function (event) {
+            console.log("aaya");
+            var keyPressed = event.keyCode || event.which;
+            if (keyPressed === 13) {
+                alert("You pressed the Enter key!!");
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
     function buscaItens(descricao, tipoItem){
         window.location.href = '/pedido/buscaitem?descricao=' + descricao + '&tipo=' + tipoItem;
     }
     function adicionaItem(index, quantidade) {
         window.location.href = window.document.location.origin + '/pedido/addprodutoservico?index=' + index + '&qtde=' + quantidade;
     }
+    function removeItem(id) {
+        window.location.href = window.document.location.origin + '/pedido/removeprodutoservico?id=' + id;
+    }
+
 
 </script>
-
-<body>
 <nav class="navbar navbar-expand-lg bg-success navbar-light ">
     <div class="container-fluid">
         <a class="navbar-brand" href="/" style="font-size: 30px;"><b>Brand</b></a>
@@ -119,37 +134,37 @@
                     <h2 class="text-center mt-5">Carrinho</h2>
                     <table class="table text-center">
                         <tr>
-                            <th></th>
-                            <th>Tipo</th>
+                            <th>Nº</th>
                             <th>Codigo</th>
+                            <th>Tipo</th>
                             <th>Descrição</th>
                             <th>Valor Unit.</th>
                             <th>Qtd Sol.</th>
                             <th>Total item</th>
                             <th>Remover do Pedido</th>
                         </tr>
-                        <tr th:each="itemPedido, stat : *{itensPedido}" id="itens">
+                        <tr th:each="itemPedido, stat : ${pedido.itensPedido}" id="itens">
                             <td th:text="(${stat.index} + 1)"></td>
-                            <td th:text="${#strings.substring(#object.itensPedido[__${stat.index}__].produto.id, 0, 8)}"></td>
-                            <td th:text="${#object.itensPedido[__${stat.index}__].produto.tipo}"></td>
-                            <td th:text="${#object.itensPedido[__${stat.index}__].produto.nomeDescricao}"></td>
-                            <td th:text="${#numbers.formatCurrency(itensPedido[__${stat.index}__].valorPorUnidadeCobrada)}"></td>
-                            <td th:text="${itensPedido[__${stat.index}__].quantidadeSolicitada"></td>
-                            <td th:text="${#numbers.formatCurrency(itensPedido[__${stat.index}__].valorTotal)}"></td>
+                            <td th:text="${#strings.substring(itemPedido.produto.id, 0, 8)}"></td>
+                            <td th:text="${itemPedido.produto.tipo}"></td>
+                            <td th:text="${itemPedido.produto.nomeDescricao}"></td>
+                            <td th:text="${#numbers.formatCurrency(itemPedido.produto.valorVenda)}"></td>
+                            <td th:text="${itemPedido.quantidadeSolicitada}"></td>
+                            <td th:text="${#numbers.formatCurrency(itemPedido.valorTotal)}"></td>
                             <td>
-                                <button class="btn btn-primary" id="removeItem" name="removeItem"
-                                        type="button" th:attr="onclick=|remove(${stat.index})|">-
+                                <button class="btn btn-danger" id="rmvItem" name="rmvItem"
+                                        type="button" th:attr="onclick=|removeItem('${itemPedido.produto.id}')|">-
                                 </button>
                             </td>
                         </tr>
                     </table>
                 </div>
-                <!--<div>
+                <div>
                     <label class="form-labels"> Sub-Total: <span
                             th:text="*{#numbers.formatCurrency(valorTotal)}"> </span></label>
-                </div>-->
+                </div>
                 <div class="text-center">
-                    <button class="btn btn-primary text-center">Fechar Pedido</button>
+                    <button class="btn btn-primary text-center" type="submit">Fechar Pedido</button>
                 </div>
             </div>
         </form>
@@ -157,34 +172,4 @@
 
 </div>
 </body>
-
-
 </html>
-<!--
-
-<table class="table text-center">
-    <tr>
-        <th>Nº</th>
-        <th>Codigo</th>
-        <th>Descrição</th>
-        <th>Qtd Sol.</th>
-        <th>Valor Unit.</th>
-        <th>Valor Total.</th>
-        <th>Estoque Disponível</th>
-        <th></th>
-    </tr>
-    <tr th:each="produto, stat : *{itensEncontrados}" id="itensEncontrados">
-        <td th:text="(${stat.index} + 1)"></td>
-        <td th:text="*{itensEncontrados[__${stat.index}__].codigo}"></td>
-        <td th:text="*{itensEncontrados[__${stat.index}__].descricao}"></td>
-        <td th:text="*{itensEncontrados[__${stat.index}__].quantidadeVenda}"></td>
-        <td th:text="*{#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valor)}"></td>
-        <td th:text="*{#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorTotalEmVenda)}"></td>
-        <td th:text="*{itensEncontrados[__${stat.index}__].quantidade}"></td>
-        <td>
-            <button class="btn btn-danger" id="removeItemNumero" name="removeItemNumero"
-                    type="submit" th:value="${stat.index}">Remover
-            </button>
-        </td>
-    </tr>
-</table>-->

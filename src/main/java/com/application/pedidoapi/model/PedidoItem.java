@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -23,7 +25,7 @@ public class PedidoItem{
     private Pedido pedido;
 
     @OneToOne
-    @JoinColumn(name = "codigo_produto", foreignKey = @ForeignKey(name = "fk_produto_pedido"))
+    @JoinColumn(name = "codigo_produto", foreignKey = @ForeignKey(name = "fk_produto_pedidoitem"))
     private Produto produto;
 
     @Column(name = "quantidade_solicitada")
@@ -35,8 +37,10 @@ public class PedidoItem{
     @Column(name = "valor_cobrado_unidade")
     private double valorPorUnidadeCobrada;
 
-    public PedidoItem(Produto produto){
+    public PedidoItem(Produto produto, double qtdeSolicitada){
         this.produto = produto;
+        this.quantidadeSolicitada = qtdeSolicitada;
         this.valorPorUnidadeCobrada = produto.getValorVenda();
+        this.valorTotal = qtdeSolicitada * produto.getValorVenda();
     }
 }

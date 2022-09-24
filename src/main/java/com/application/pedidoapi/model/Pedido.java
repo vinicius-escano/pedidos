@@ -4,6 +4,7 @@ import com.application.pedidoapi.enums.SituacaoPedido;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,12 +21,23 @@ public class Pedido {
     @Column(name = "desconto")
     private double desconto = 0.0;
 
+    @Column(name = "valor_servicos")
+    private double valorServicos = 0.0;
+
+    @Column(name = "valor_produtos")
+    private double valorProdutos = 0.0;
+
+    @Column(name = "valor_total")
+    private double valorTotal = 0.0;
+
     @Column(name = "situacao_pedido")
     @Enumerated(EnumType.STRING)
     private SituacaoPedido pedidoSituacao = SituacaoPedido.EM_ABERTO;
 
-    @OneToMany
-    @JoinColumn(name = "codigo_produto", foreignKey = @ForeignKey(name = "fk_item_pedido"))
+    @Column(name = "cadastrado_em")
+    private LocalDateTime cadastradoEm;
+
+    @Transient
     private List<PedidoItem> itensPedido = new ArrayList<>();
 
 }
