@@ -18,6 +18,9 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column(name = "cpf_cpnj_comprador")
+    private String cpfCnpjComprador;
+
     @Column(name = "desconto")
     private double desconto = 0.0;
 

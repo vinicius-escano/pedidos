@@ -40,8 +40,8 @@ public class ProdutoRepositoryTest {
     @Order(2)
     public void saveProduto() {
         Produto produto = Produto.builder()
-                .codigo(CODIGO)
-                .fabricante(FABRICANTE)
+                .id(CODIGO)
+                .fabricanteFornecedor(FABRICANTE)
                 .nomeDescricao(NOME_PRODUTO)
                 .valorCompra(VALOR_COMPRA)
                 .valorVenda(VALOR_VENDA)
@@ -49,7 +49,7 @@ public class ProdutoRepositoryTest {
                 .ativo(true)
                 .build();
         Produto savedProduto = produtoRepository.save(produto);
-        Assertions.assertEquals(FABRICANTE, savedProduto.getFabricante());
+        Assertions.assertEquals(FABRICANTE, savedProduto.getFabricanteFornecedor());
         Assertions.assertEquals(NOME_PRODUTO, savedProduto.getNomeDescricao());
         Assertions.assertEquals(VALOR_COMPRA, savedProduto.getValorCompra());
         Assertions.assertEquals(VALOR_VENDA, savedProduto.getValorVenda());
@@ -61,9 +61,9 @@ public class ProdutoRepositoryTest {
     @Test
     @Order(3)
     public void findProduto() {
-        Optional<Produto> opProduto = produtoRepository.findByUUID(CODIGO);
+        Optional<Produto> opProduto = produtoRepository.findById(CODIGO);
         if (opProduto.isPresent()) {
-            Assertions.assertEquals(CODIGO, opProduto.get().getCodigo());
+            Assertions.assertEquals(CODIGO, opProduto.get().getId());
         }
         System.out.print("Encontrado com sucesso");
     }
@@ -79,12 +79,12 @@ public class ProdutoRepositoryTest {
     @Test
     @Order(5)
     public void update() {
-        Optional<Produto> opProduto = produtoRepository.findByUUID(CODIGO);
+        Optional<Produto> opProduto = produtoRepository.findById(CODIGO);
         if (opProduto.isPresent()) {
             opProduto.get().setAtivo(false);
         }
         Produto produtoUpdated = produtoRepository.save(opProduto.get());
-        Assertions.assertEquals(FABRICANTE, produtoUpdated.getFabricante());
+        Assertions.assertEquals(FABRICANTE, produtoUpdated.getFabricanteFornecedor());
         Assertions.assertEquals(NOME_PRODUTO, produtoUpdated.getNomeDescricao());
         Assertions.assertEquals(VALOR_COMPRA, produtoUpdated.getValorCompra());
         Assertions.assertEquals(VALOR_VENDA, produtoUpdated.getValorVenda());
@@ -96,12 +96,12 @@ public class ProdutoRepositoryTest {
     @Test
     @Order(6)
     public void delete() {
-        Optional<Produto> opProduto = produtoRepository.findByUUID(CODIGO);
+        Optional<Produto> opProduto = produtoRepository.findById(CODIGO);
         if (opProduto.isPresent()) {
             produtoRepository.delete(opProduto.get());
         }
         Produto deletedProduto = null;
-        Optional<Produto> opDeleted = produtoRepository.findByUUID(CODIGO);
+        Optional<Produto> opDeleted = produtoRepository.findById(CODIGO);
         if (opDeleted.isPresent()) {
             deletedProduto = opDeleted.get();
         }

@@ -36,6 +36,7 @@
     }
 
 
+
 </script>
 <nav class="navbar navbar-expand-lg bg-success navbar-light ">
     <div class="container-fluid">
@@ -106,31 +107,36 @@
             <div>
                 <div>
                     <h4 class="text-center mt-5">Itens Disponíveis</h4>
-                    <table class="table text-center">
-                        <tr>
-                            <th>Codigo</th>
-                            <th>Descrição</th>
-                            <th>Valor Unit.</th>
-                            <th>Estoque Disponível</th>
-                            <th>Qtd Sol.</th>
-                            <th>Adicionar ao Pedido</th>
-                        </tr>
-                        <tr th:each="produto, stat : ${itensEncontrados}" id="itensEncontrados">
-                            <td th:text="${#strings.substring(itensEncontrados[__${stat.index}__].id, 0,8)}"></td>
-                            <td th:text="${itensEncontrados[__${stat.index}__].nomeDescricao}"></td>
-                            <td th:text="${#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorVenda)}"></td>
-                            <td th:text="${itensEncontrados[__${stat.index}__].quantidadeDisponivel}"></td>
-                            <td><input class="form-inputs qtdeSolicitada" id="qtdeSolicitada" name="qtdeSolicitada">
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" id="addItem" name="addItem"
-                                        type="button"
-                                        th:attr="onclick=|adicionaItem(${stat.index}, document.getElementsByClassName('qtdeSolicitada')[${stat.index}].value)|">
-                                    +
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
+                    <div th:if="${#lists.isEmpty(itensEncontrados)}">
+                        <!-- colocar alguma coisa? -->
+                    </div>
+                    <div th:if="${!#lists.isEmpty(itensEncontrados)}">
+                        <table class="table text-center">
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Descrição</th>
+                                <th>Valor Unit.</th>
+                                <th>Estoque Disponível</th>
+                                <th>Qtd Sol.</th>
+                                <th>Adicionar ao Pedido</th>
+                            </tr>
+                            <tr th:each="produto, stat : ${itensEncontrados}" id="itensEncontrados">
+                                <td th:text="${#strings.substring(itensEncontrados[__${stat.index}__].id, 0,8)}"></td>
+                                <td th:text="${itensEncontrados[__${stat.index}__].nomeDescricao}"></td>
+                                <td th:text="${#numbers.formatCurrency(itensEncontrados[__${stat.index}__].valorVenda)}"></td>
+                                <td th:text="${itensEncontrados[__${stat.index}__].quantidadeDisponivel}"></td>
+                                <td><input class="form-inputs qtdeSolicitada" id="qtdeSolicitada" name="qtdeSolicitada">
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" id="addItem" name="addItem"
+                                            type="button"
+                                            th:attr="onclick=|adicionaItem(${stat.index}, document.getElementsByClassName('qtdeSolicitada')[${stat.index}].value)|">
+                                        +
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                     <h2 class="text-center mt-5">Carrinho</h2>
                     <table class="table text-center">
                         <tr>

@@ -4,8 +4,12 @@ import com.application.pedidoapi.enums.SituacaoPedido;
 import com.application.pedidoapi.enums.Tipo;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
+import com.application.pedidoapi.model.Produto;
 import com.application.pedidoapi.repository.PedidoRepository;
+import com.application.pedidoapi.utils.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +30,40 @@ public class PedidoService {
 
     @Autowired
     private PedidoItemService pedidoItemService;
+
+    public Optional<Pedido> save(Pedido pedido){
+        Optional<Pedido> opPedido = Optional.ofNullable(pedidoRepository.save(pedido));
+        if(opPedido.isPresent()){
+            return opPedido;
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Pedido> update(Pedido pedido) {
+        return save(pedido);
+    }
+
+    public List<Pedido> findAll(){
+        return pedidoRepository.findAll();
+    }
+
+    public Optional<Pedido> findById(UUID uuid){
+        return pedidoRepository.findById(uuid);
+    }
+
+    public Page<Pedido> findAll(Pageable pageable) {
+        return pedidoRepository.findAll(pageable);
+    }
+
+    public Page<Pedido> findAllByStatus(SituacaoPedido situacaoPedido, Pageable pageable) {
+        return pedidoRepository.findBySituacaoPedidoEquals(situacaoPedido, pageable);
+    }
+
+    public boolean delete(Pedido pedido) {
+        pedidoItemService.delete(pedido.getItensPedido());
+        pedidoRepository.delete(pedido);
+        return true;
+    }
 
     public Pedido savePreConfirmacao(Pedido pedido) {
         Pedido principal = new Pedido();
@@ -88,14 +126,6 @@ public class PedidoService {
         }
     }
 
-    public List<Pedido> findAll(){
-        return pedidoRepository.findAll();
-    }
-
-    public Optional<Pedido> findById(UUID uuid){
-        return pedidoRepository.findById(uuid);
-    }
-
     public Optional<Pedido> buscaMontaPedidoVisualizacao(String uuid) {
         Optional<Pedido> opPedido = pedidoRepository.findById(UUID.fromString(uuid));
         if(opPedido.isPresent()){
@@ -106,5 +136,6 @@ public class PedidoService {
         }
         return opPedido;
     }
+
 
 }
