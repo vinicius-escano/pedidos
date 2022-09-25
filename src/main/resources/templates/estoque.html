@@ -25,26 +25,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
-                       data-mdb-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li>
-                            <a class="dropdown-item" href="#">Action</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Another action</a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider"/>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </li>
-                    </ul>
-                </li>
             </ul>
             <ul class="navbar-nav d-flex flex-row me-1">
                 <li class="nav-item me-3 me-lg-0">
@@ -54,58 +34,33 @@
                     <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
                 </li>
             </ul>
-
-            <form class="w-auto">
-                <input type="search" class="form-control" placeholder="Type query" aria-label="Search">
-            </form>
-
         </div>
     </div>
 </nav>
 
 <div class="container mt-3">
     <div class="boxborder text-center">
-        <h1>Prods</h1>
-        <div th:if="${isProdutos} == true">
-            <table class="table">
-                <tr>
-                    <th>Código</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Quantidade Disponível</th>
-                    <th>Acessar Cadastro</th>
-                </tr>
-                <tr th:each="produto : ${produtos}">
-                    <td th:text="${produto.codigo}"></td>
-                    <td th:text="${produto.descricao}"></td>
-                    <td th:text="${produto.valor}"></td>
-                    <td th:text="${produto.quantidade}"></td>
-                    <td><a type="button" class="btn btn-primary"
-                           th:href="@{'/acessarproduto?' (id = ${produto.codigo})}">
-                        Acessar</a></td>
-                </tr>
-            </table>
-        </div>
-        <div th:if="${isProduto} == false">
-            <table class="table">
-                <tr>
-                    <th>Código</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Quantidade Disponível</th>
-                    <th>Acessar Cadastro</th>
-                </tr>
-                <tr th:each="servico : ${servicos}">
-                    <td th:text="${servico.codigo}"></td>
-                    <td th:text="${servico.descricao}"></td>
-                    <td th:text="${servico.valor}"></td>
-                    <td th:text="${servico.quantidade}"></td>
-                    <td><a type="button" class="btn btn-primary"
-                           th:href="@{'/acessarservico?' (id = ${servico.codigo})}">
-                        Acessar</a></td>
-                </tr>
-            </table>
-        </div>
+        <h1>Itens</h1>
+        <table class="table">
+            <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Quantidade Disponível</th>
+                <th>Acessar Cadastro</th>
+            </tr>
+            <tr th:each="produto : ${produtos}">
+                <td th:text="${#strings.substring(produto.id,0,8)}"></td>
+                <td th:text="${produto.tipo}"></td>
+                <td th:text="${produto.nomeDescricao}"></td>
+                <td th:text="${#numbers.formatCurrency(produto.valorVenda)}"></td>
+                <td th:text="${produto.quantidadeDisponivel}"></td>
+                <td><a type="button" class="btn btn-primary"
+                       th:href="@{/produto/acessarproduto/{id} (id=${produto.id})}">
+                    Acessar</a></td>
+            </tr>
+        </table>
     </div>
 </div>
 </body>

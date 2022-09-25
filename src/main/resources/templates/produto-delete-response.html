@@ -3,11 +3,11 @@
 
 <head>
     <title>Confirmação</title>
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-reboot.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-grid.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-utilities.css">
-    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="../../css/styles.css">
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
 </head>
 
@@ -15,6 +15,7 @@
     function aplicarDesconto(perc) {
         window.location.href = window.document.location.origin + '/pedido/aplicadesconto?perc=' + perc;
     }
+
 </script>
 
 <body>
@@ -71,34 +72,33 @@
 
 <div class="container mt-3">
     <div class="boxborder text-center">
-        <form th:object="${pedido}" th:action="@{/}" method="post">
-            <h1>Pedido Registrado com Sucesso!</h1>
-            <label class="mt-5 form-labels">Codigo Pedido: <span th:text="*{id}"></span></label><br>
-            <label class="form-labels">CPF/CNPJ: <span th:text="*{cpfCnpjComprador}"></span></label><br>
-            <label class="form-labels">Situação: <span th:text="*{pedidoSituacao}"></span></label><br>
-            <label class="form-labels">Valor Total: <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></label>
-            <h3 class="mt-4">Itens Solicitados</h3>
-            <table class="table text-center">
-                <tr>
-                    <th>Nº</th>
-                    <th>Codigo</th>
-                    <th>Tipo</th>
-                    <th>Descrição</th>
-                    <th>Valor Unit.</th>
-                    <th>Qtd Sol.</th>
-                    <th>Total item</th>
-                </tr>
-                <tr th:each="itemPedido, stat : ${pedido.itensPedido}" id="itens">
-                    <td th:text="(${stat.index} + 1)"></td>
-                    <td th:text="${#strings.substring(itemPedido.produto.id, 0, 8)}"></td>
-                    <td th:text="${itemPedido.produto.tipo}"></td>
-                    <td th:text="${itemPedido.produto.nomeDescricao}"></td>
-                    <td th:text="${#numbers.formatCurrency(itemPedido.produto.valorVenda)}"></td>
-                    <td th:text="${itemPedido.quantidadeSolicitada}"></td>
-                    <td th:text="${#numbers.formatCurrency(itemPedido.valorTotal)}"></td>
-                </tr>
-            </table>
-            <a type="button" href="/" class="btn btn-primary">Voltar ao Menu</a>
+        <form th:object="${produto}" th:action="@{/}" method="post">
+            <div th:if="${deleted}">
+                <h1>Produto excluido com Sucesso!</h1>
+                <a type="button" href="/" class="btn btn-primary">Retornar ao Menu</a>
+            </div>
+            <div th:if="${!deleted}">
+                <h3>Não foi possivel excluir produto pois existem pedidos feitos com esse item!</h3>
+                <table class="table text-center">
+                    <tr>
+                        <th>Nº</th>
+                        <th>Codigo</th>
+                        <th>Pedido Origem</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                    </tr>
+                    <tr th:each="itemPedido, stat : ${pendencias}" id="itens">
+                        <td th:text="(${stat.index} + 1)"></td>
+                        <td th:text="${#strings.substring(itemPedido.produto.id, 0, 8)}"></td>
+                        <td th:text="${#strings.substring(itemPedido.pedido.id, 0, 8)}"></td>
+                        <td th:text="${itemPedido.produto.tipo}"></td>
+                        <td th:text="${itemPedido.produto.nomeDescricao}"></td>
+                    </tr>
+                </table>
+                <p>Deseja desativar o produto?</p>
+                <a type="button" th:href="@{'/produto/desativaproduto/{id}'(id=${produto.id})}" class="btn btn-warning">Desativar</a>
+                <a type="button" th:href="@{'/produto/acessarproduto/{id}'(id=${produto.id})}" class="btn btn-primary">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

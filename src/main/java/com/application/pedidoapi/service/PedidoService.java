@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,10 +28,10 @@ public class PedidoService {
     PedidoRepository pedidoRepository;
 
     @Autowired
-    private ProdutoService produtoService;
+    private PedidoItemService pedidoItemService;
 
     @Autowired
-    private PedidoItemService pedidoItemService;
+    private ProdutoService produtoService;
 
     public Optional<Pedido> save(Pedido pedido){
         Optional<Pedido> opPedido = Optional.ofNullable(pedidoRepository.save(pedido));
@@ -137,5 +139,77 @@ public class PedidoService {
         return opPedido;
     }
 
+    public Pedido confirmaPedido(Pedido pedido) {
+        produtoService.alteraEstoque(pedido);
+        Pedido savedPedido = updateConfirmado(pedido);
+        List<PedidoItem> itens = pedidoItemService.findAllByPedidoId(savedPedido);
+        itens.stream().forEach(i -> {
+            savedPedido.getItensPedido().add(i);
+        });
+        return savedPedido;
+    }
+
+    /*public Optional<ModelAndView> buscaListaAlterarLimite() {
+
+    }
+
+    public void filtraLista(List<Pedido> listPedido, String cpfCnpj, String dataSolicitadoInicio, String dataSolicitadoFim, SituacaoPedido status) {
+        List<Pedido> listaFiltrada = new ArrayList<>();
+        List<Pedido> listUtil = new ArrayList<>();
+        if (dataSolicitado != null && !dataSolicitado.equals("")) {
+            LocalDate data = ConverterUtil.ldFormatter(dataSolicitado);
+            for (Pedido p: listPedido) {
+                if (p.getDataSolicitacao().isEqual(data)) {
+                    listaFiltrada.add(lm);
+                }
+            }
+        }
+        if (nomeCliente != null && !nomeCliente.equals("")) {
+            if (listaFiltrada.size() == 0) {
+                for (AlteraLimite lm : listSolicitacoes) {
+                    if (lm.getNomeCliente().substring(0, lm.getNomeCliente().indexOf(" ")).equalsIgnoreCase(nomeCliente)) {
+                        listaFiltrada.add(lm);
+                    }
+                }
+            } else {
+                for (AlteraLimite lm : listaFiltrada) {
+                    if (lm.getNomeCliente().substring(0, lm.getNomeCliente().indexOf(" ")).equalsIgnoreCase(nomeCliente)) {
+                        listUtil.add(lm);
+                    }
+                }
+                listaFiltrada.clear();
+                listaFiltrada.addAll(listUtil);
+            }
+        }
+        if (status != null && !status.equals("")) {
+            StatusAprovacaoEnum aprovacaoEnum = null;
+            if (status.equals("EM_ANALISE")) {
+                aprovacaoEnum = StatusAprovacaoEnum.EM_ANALISE;
+            } else if (status.equals("APROVADO")) {
+                aprovacaoEnum = StatusAprovacaoEnum.APROVADO;
+            } else if (status.equals("REPROVADO")) {
+                aprovacaoEnum = StatusAprovacaoEnum.RECUSADO;
+            }
+            if (listaFiltrada.size() == 0) {
+                for (AlteraLimite lm : listSolicitacoes) {
+                    if (lm.getStatus() == aprovacaoEnum) {
+                        listaFiltrada.add(lm);
+                    }
+                }
+            } else {
+                listUtil.clear();
+                for (AlteraLimite lm : listaFiltrada) {
+                    if (lm.getStatus() == aprovacaoEnum) {
+                        listUtil.add(lm);
+                    }
+                }
+                listaFiltrada.clear();
+                listaFiltrada.addAll(listUtil);
+            }
+        }
+        alteraLimiteDTO.getListAlteraLimite().clear();
+        alteraLimiteDTO.getListAlteraLimite().addAll(listaFiltrada);
+    }
+*/
 
 }

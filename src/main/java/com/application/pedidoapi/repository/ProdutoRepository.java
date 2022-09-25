@@ -1,5 +1,6 @@
 package com.application.pedidoapi.repository;
 
+import com.application.pedidoapi.enums.Tipo;
 import com.application.pedidoapi.model.Produto;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
@@ -16,10 +17,13 @@ import java.util.UUID;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
 
-    @Query("select p from Produto p where p.nomeDescricao like %:descricao%")
-    List<Produto> findByDescricao(@Param("descricao") String descricao);
+    @Query("select p from Produto p where p.tipo = :tipo and p.nomeDescricao like %:descricao%")
+    List<Produto> findByDescricao(@Param("descricao") String descricao, @Param("tipo")Tipo tipo);
 
     @Query("select p from Produto p where p.nomeDescricao like %:descricao%")
     Page<Produto> findByDescricaoPageable(@Param("descricao") String descricao, Pageable pageable);
+
+    @Query("select p from Produto p where p.tipo = :tipo")
+    List<Produto> findAllByTipo(@Param("tipo")Tipo tipo);
 
 }

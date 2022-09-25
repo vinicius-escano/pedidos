@@ -2,6 +2,7 @@ package com.application.pedidoapi.service;
 
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
+import com.application.pedidoapi.model.Produto;
 import com.application.pedidoapi.repository.PedidoItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,5 +63,9 @@ public class PedidoItemService {
     public boolean delete(List<PedidoItem> pedidoItens) {
         pedidoItemRepository.deleteAll(pedidoItens);
         return true;
+    }
+
+    public List<PedidoItem> findAllWithProduto(Produto produto) {
+        return pedidoItemRepository.findAllWithProduto(produto);
     }
 }

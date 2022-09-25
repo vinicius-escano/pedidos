@@ -71,11 +71,13 @@
 
 <div class="container mt-3">
     <div class="boxborder text-center">
-        <form th:object="${pedido}" th:action="@{/}" method="post">
-            <label class="mt-5">Codigo Pedido: <span th:text="*{id}"></span></label><br>
-            <label>Valor Total: <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></label><br>
-            <label>Desconto Aplicado: <span th:text="*{desconto} + '%'"></span></label>
-            <h1 class="mt-4">Itens Solicitados</h1>
+        <form th:object="${pedido}" th:action="@{/pedido/efetivar}" method="post">
+            <label class="mt-5 form-labels">Codigo Pedido: <span th:text="*{id}"></span></label><br>
+            <label class="form-labels">Situação: <span th:text="*{pedidoSituacao}"></span></label><br>
+            <label class="form-labels">CPF/CNPJ do Comprador: <span th:text="*{cpfCnpjComprador}"></span></label><br>
+            <label class="form-labels">Valor Total: <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></label><br>
+            <label class="form-labels">Desconto Aplicado: <span th:text="*{desconto} + '%'"></span></label>
+            <h2 class="mt-4">Itens Solicitados</h2>
             <table class="table text-center">
                 <tr>
                     <th>Nº</th>
@@ -96,6 +98,7 @@
                     <td th:text="${#numbers.formatCurrency(itemPedido.valorTotal)}"></td>
                 </tr>
             </table>
+            <button th:if="*{pedidoSituacao} == ${T(com.application.pedidoapi.enums.SituacaoPedido).EM_ABERTO}" type="submit" class="btn btn-info">Finalizar Pedido</button>
             <a type="button" href="/pedido/visualizarpedidos" class="btn btn-primary">Voltar</a>
         </form>
     </div>

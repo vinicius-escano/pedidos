@@ -118,9 +118,13 @@
                 <label class="form-labels"> Total: <span
                         th:text="*{#numbers.formatCurrency(valorTotal)}"></span></label>
             </div>
+            <div class="mt-5">
+                <label class="form-labels">CPF/CNPJ do Comprador</label>
+                <input class="form-inputs" th:field="*{cpfCnpjComprador}" name="cpfCnpjComprador" id="cpfCnpjComprador">
+            </div>
             <div>
                 <button class="btn btn-primary" id="confirmar" name="confirmar">Confirmar</button>
-                <button class="btn btn-primary" id="cancelar" name="cancelar">Cancelar</button>
+                <a type="button" th:href="@{'/pedido/cancelapedido/{id}'(id=${pedido.id})}" class="btn btn-danger" id="cancelar" name="cancelar">Cancelar</a>
             </div>
         </form>
     </div>

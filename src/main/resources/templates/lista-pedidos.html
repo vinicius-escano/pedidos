@@ -11,6 +11,17 @@
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
 </head>
 
+<script>
+    function mostrarMaisFiltros(x) {
+            if (x == 1) {
+                document.getElementById("filtros").style.display = "block";
+            } else {
+                document.getElementById("filtros").style.display = "none";
+            }
+        }
+
+
+</script>
 <body>
 <nav class="navbar navbar-expand-lg bg-success navbar-light ">
     <div class="container-fluid">
@@ -65,16 +76,52 @@
 
 <div class="container mt-3">
     <div class="boxborder text-center">
+        <h1>Todos Pedidos</h1>
+        <!--<form action="/pedido/buscapedidoscomfiltros" th:action="@{/pedido/buscapedidoscomfiltros}"
+              method="POST">
+            <p>Para filtrar por loja, selecione abaixo e clique em buscar</p>
+            <label class="mr-2">Filtrar por Status</label>
+            <select th:value="${status}" th:name="status" th:id="status">
+                <option value="">Selecione</option>
+                <option value="EM_ABERTO">Em Aberto</option>
+                <option value="CONFIRMADO">Confirmado</option>
+                <option value="FECHADO">Fechado</option>
+                <option value="CANCELADO">Cancelado</option>
+            </select>
+            <br><br>
+            <label>Mais Filtros?</label>
+            <input type="radio" id="maisFiltros" name="maisFiltros" value="true"
+                   onclick="mostrarMaisFiltros(1);" class="ml-2 mr-1">Sim
+            <input type="radio" id="maisFiltros" name="maisFiltros" value="false"
+                   onclick="mostrarMaisFiltros(0);" class="ml-3 mr-1" checked="checked">Não
+            <br>
+            <div class="container" id="filtros">
+                <label class="mr-2">Filtrar por periodo
+                    <input type="date" th:value="${dataSolicitadoInicio}" th:name="dataSolicitadoInicio"
+                           th:id="dataSolicitadoInicio"></label>
+                <input type="date" th:value="${dataSolicitadoFim}" th:name="dataSolicitadoFim"
+                       th:id="dataSolicitadoFim"></label>
+                <br>
+                <label class="mr-2">CPF/CNPJ do comprador
+                    <input type="text" th:value="${cpfCnpf}" th:name="cpfCnpj"
+                           th:id="cpfCnpj">
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2"> Buscar <i class="fa fa-search"
+                                                                          aria-hidden="true"></i></button>
+        </form>-->
         <table class="table">
             <tr>
                 <th>Código</th>
                 <th>Data</th>
+                <th>CPF/CNPJ do Comprador</th>
                 <th>Valor</th>
-                <th>Acessar</th>
+                <th>Acessar Pedido</th>
             </tr>
             <tr th:each="pedido : ${pedidos}">
-                <td th:text="${pedido.id}"></td>
-                <td th:text="${pedido.cadastradoEm}"></td>
+                <td th:text="${#strings.substring(pedido.id,0,8)}"></td>
+                <td th:text="${#temporals.format(pedido.cadastradoEm, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${pedido.cpfCnpjComprador}"></td>
                 <td th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></td>
                 <td><a type="button" class="btn btn-primary"
                        th:href="@{'/pedido/acessarpedido?' (id = ${pedido.id})}">

@@ -12,3 +12,11 @@ INSERT INTO tb_produto (id, ativo, nome_descricao, fabricante_fornecedor, valor_
 ('a7dcaaf0-3ba1-11ed-a133-0242ac120002', true, 'Serrote', 'Serrano Ferramentas', 26.50, 60.50, 15, 'PRODUTO'),
 ('760f2af6-3ba2-11ed-a261-0242ac120002', true, 'Prego 100un', 'Serrano Ferramentas', 10.35, 25.00, 50, 'PRODUTO'),
 ('7cf34582-3ba2-11ed-a261-0242ac120002', true, 'Prego 200un', 'Serrano Ferramentas', 15.70, 45.00, 25, 'PRODUTO');
+
+INSERT INTO tb_produto (id, ativo, nome_descricao, fabricante_fornecedor, valor_compra, valor_venda, quantidade_disponivel, tipo) VALUES
+('0839d6e6-3c8a-11ed-a261-0242ac120002', true, 'Tornearia', 'Serralheria do Kleiton', 0.0, 50.00, 0.0,'SERVICO'),
+('15298bd0-3c8a-11ed-a261-0242ac120002', true, 'Fresa', 'Serralheria do Kleiton', 0.0, 50.00, 0.0,'SERVICO'),
+('1aa6fe9e-3c8a-11ed-a261-0242ac120002', true, 'Serralheria', 'Serralheria do Kleiton', 0.0, 50.00, 0.0,'SERVICO'),
+('262f5ed2-3c8a-11ed-a261-0242ac120002', true, 'Manutenção', 'Serralheria do Kleiton', 0.0, 80.00, 0.0,'SERVICO'),
+('2b527d68-3c8a-11ed-a261-0242ac120002', true, 'Projeto', 'Serralheria do Kleiton', 0.0, 100.00, 0.0,'SERVICO'),
+('2f3f153a-3c8a-11ed-a261-0242ac120002', true, 'Montagem', 'Serralheria do Kleiton', 0.0, 70.00, 0.0,'SERVICO');

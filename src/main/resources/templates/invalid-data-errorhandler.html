@@ -3,19 +3,13 @@
 
 <head>
     <title>Confirmação</title>
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-reboot.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-grid.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-utilities.css">
-    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="../../css/styles.css">
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
 </head>
-
-<script>
-    function aplicarDesconto(perc) {
-        window.location.href = window.document.location.origin + '/pedido/aplicadesconto?perc=' + perc;
-    }
-</script>
 
 <body>
 <nav class="navbar navbar-expand-lg bg-success navbar-light ">
@@ -71,35 +65,8 @@
 
 <div class="container mt-3">
     <div class="boxborder text-center">
-        <form th:object="${pedido}" th:action="@{/}" method="post">
-            <h1>Pedido Registrado com Sucesso!</h1>
-            <label class="mt-5 form-labels">Codigo Pedido: <span th:text="*{id}"></span></label><br>
-            <label class="form-labels">CPF/CNPJ: <span th:text="*{cpfCnpjComprador}"></span></label><br>
-            <label class="form-labels">Situação: <span th:text="*{pedidoSituacao}"></span></label><br>
-            <label class="form-labels">Valor Total: <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></label>
-            <h3 class="mt-4">Itens Solicitados</h3>
-            <table class="table text-center">
-                <tr>
-                    <th>Nº</th>
-                    <th>Codigo</th>
-                    <th>Tipo</th>
-                    <th>Descrição</th>
-                    <th>Valor Unit.</th>
-                    <th>Qtd Sol.</th>
-                    <th>Total item</th>
-                </tr>
-                <tr th:each="itemPedido, stat : ${pedido.itensPedido}" id="itens">
-                    <td th:text="(${stat.index} + 1)"></td>
-                    <td th:text="${#strings.substring(itemPedido.produto.id, 0, 8)}"></td>
-                    <td th:text="${itemPedido.produto.tipo}"></td>
-                    <td th:text="${itemPedido.produto.nomeDescricao}"></td>
-                    <td th:text="${#numbers.formatCurrency(itemPedido.produto.valorVenda)}"></td>
-                    <td th:text="${itemPedido.quantidadeSolicitada}"></td>
-                    <td th:text="${#numbers.formatCurrency(itemPedido.valorTotal)}"></td>
-                </tr>
-            </table>
-            <a type="button" href="/" class="btn btn-primary">Voltar ao Menu</a>
-        </form>
+        <h3 th:text="${message}"></h3>
+        <button class="btn btn-primary" onclick="history.back()">Voltar</button>
     </div>
 </div>
 </body>

@@ -34,16 +34,21 @@ public class Produto {
     private String fabricanteFornecedor;
 
     @Column(name = "valor_compra", nullable = false)
-    private double valorCompra;
+    private Double valorCompra;
 
     @Column(name = "valor_venda", nullable = false)
-    private double valorVenda;
+    private Double valorVenda;
 
     @Column(name = "quantidade_disponivel")
-    private double quantidadeDisponivel;
+    private Double quantidadeDisponivel;
 
     @Column(name = "ativo")
     private boolean ativo = true;
 
+    @Column(name = "codigo_iss")
+    private Integer codigoISS;
+
+    @Column(name = "aliquota")
+    private Double aliquota = 0.0;
 
 }

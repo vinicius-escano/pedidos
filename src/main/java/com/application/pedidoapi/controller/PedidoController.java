@@ -6,10 +6,10 @@ import com.application.pedidoapi.exception.SessaoExpiradaException;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.model.Produto;
-import com.application.pedidoapi.model.Servico;
+import com.application.pedidoapi.service.PedidoItemService;
 import com.application.pedidoapi.service.PedidoService;
 import com.application.pedidoapi.service.ProdutoService;
-import com.application.pedidoapi.service.ServicoService;
+import com.application.pedidoapi.utils.DataErrorHandler;
 import com.application.pedidoapi.utils.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "pedido")
@@ -36,7 +37,7 @@ public class PedidoController {
     private ProdutoService produtoService;
 
     @Autowired
-    private ServicoService servicoService;
+    private PedidoItemService pedidoItemService;
 
     @PostMapping
     ResponseEntity<Pedido> save(@RequestBody @Valid Pedido pedido) {
@@ -110,9 +111,10 @@ public class PedidoController {
     }
 
     @GetMapping("/acessarpedido")
-    public ModelAndView acessarPedido(@RequestParam("id") String id) {
+    public ModelAndView acessarPedido(@RequestParam("id") String id, HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = pedidoService.buscaMontaPedidoVisualizacao(id);
         if (opPedido.isPresent()) {
+            httpServletRequest.getSession().setAttribute("pedido", opPedido.get());
             return new ModelAndView("visualizacao-pedido").addObject("pedido", opPedido.get());
         }
         return null;
@@ -122,21 +124,18 @@ public class PedidoController {
     public ModelAndView buscaItem(@RequestParam("descricao") String descricaoItem, @RequestParam("tipo") String tipoItem, HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
         if (opPedido.isPresent()) {
+            List<Produto> pEncontrados;
             if (tipoItem.toUpperCase().equals(Tipo.PRODUTO.toString())) {
-                List<Produto> pEncontrados = produtoService.findByDescricao(descricaoItem);
-                if (!pEncontrados.isEmpty()) {
-                    httpServletRequest.getSession().setAttribute("itensEncontrados", pEncontrados);
-                    return new ModelAndView("novo-pedido").addObject("itensEncontrados", pEncontrados).addObject("pedido", opPedido.get());
-                }
-                return new ModelAndView("novo-pedido").addObject("itensEncontrados", new ArrayList<>()).addObject("pedido", opPedido.get());
+                pEncontrados = produtoService.findProdutoByDescricao(descricaoItem);
             } else {
-                List<Servico> sEncontrados = servicoService.findByDescricao(descricaoItem);
-                if (!sEncontrados.isEmpty()) {
-                    httpServletRequest.getSession().setAttribute("itensEncontrados", sEncontrados);
-                    return new ModelAndView("novo-pedido").addObject("itensEncontrados", sEncontrados).addObject("pedido", opPedido.get());
-                }
-                return new ModelAndView("novo-pedido").addObject("itensEncontrados", new ArrayList<>()).addObject("pedido", opPedido.get());
+                pEncontrados = produtoService.findServicoByDescricao(descricaoItem);
             }
+            if (!pEncontrados.isEmpty()) {
+                List<Produto> filteredList = pEncontrados.stream().filter(p -> p.isAtivo() && p.getQuantidadeDisponivel() > 0.0).collect(Collectors.toList());
+                httpServletRequest.getSession().setAttribute("itensEncontrados", filteredList);
+                return new ModelAndView("novo-pedido").addObject("itensEncontrados", filteredList).addObject("pedido", opPedido.get());
+            }
+            return new ModelAndView("novo-pedido").addObject("itensEncontrados", new ArrayList<>()).addObject("pedido", opPedido.get());
         }
         throw new SessaoExpiradaException("Sessão expirada, reinicie o processo");
     }
@@ -178,6 +177,9 @@ public class PedidoController {
     public ModelAndView efetivarPedido(HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
         if (opPedido.isPresent()) {
+            if(opPedido.get().getItensPedido().isEmpty()){
+                return DataErrorHandler.throwMessage("Não é possivel efetivar um pedido sem itens!");
+            }
             pedidoService.calculaValoresTiposPedidos(opPedido.get());
             Pedido savedPedido = pedidoService.savePreConfirmacao(opPedido.get());
             httpServletRequest.getSession().setAttribute("pedido", savedPedido);
@@ -189,7 +191,7 @@ public class PedidoController {
     @GetMapping("/aplicadesconto")
     public ModelAndView aplicaDesconto(@RequestParam("perc") Double perc, HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
-        if(opPedido.isPresent()) {
+        if (opPedido.isPresent()) {
             if (pedidoService.aplicaDesconto(opPedido.get(), perc)) {
                 return new ModelAndView("pedido-confirmacao").addObject("pedido", opPedido.get());
             }
@@ -200,7 +202,7 @@ public class PedidoController {
     @GetMapping("/removerdesconto")
     public ModelAndView aplicaDesconto(HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
-        if(opPedido.isPresent()) {
+        if (opPedido.isPresent()) {
             opPedido.get().setValorTotal(opPedido.get().getValorServicos() + opPedido.get().getValorProdutos());
             opPedido.get().setDesconto(0.0);
             return new ModelAndView("pedido-confirmacao").addObject("pedido", opPedido.get());
@@ -211,22 +213,34 @@ public class PedidoController {
     @PostMapping("/confirmapedido")
     public ModelAndView confirmaPedido(HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
-        if(opPedido.isPresent()) {
-            produtoService.alteraEstoque(opPedido.get());
-            Pedido savedPedido = pedidoService.updateConfirmado(opPedido.get());
+        if (opPedido.isPresent()) {
+            Pedido savedPedido = pedidoService.confirmaPedido(opPedido.get());
             return new ModelAndView("pedido-finalizado").addObject("pedido", savedPedido);
         }
         throw new SessaoExpiradaException("Sessão expirada, por gentileza refaça o processo");
     }
 
-    @PostMapping("/cancelapedido")
-    public ModelAndView cancelaPedido(HttpServletRequest httpServletRequest) {
-        Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
-        if(opPedido.isPresent()) {
+    @GetMapping("/cancelapedido/{id}")
+    public ModelAndView cancelaPedido(@PathVariable("id") String id) {
+        Optional<Pedido> opPedido = pedidoService.findById(UUID.fromString(id));
+        if (opPedido.isPresent()) {
             Pedido savedPedido = pedidoService.updateCancelado(opPedido.get());
             return new ModelAndView("pedido-finalizado").addObject("pedido", savedPedido);
         }
         throw new SessaoExpiradaException("Sessão expirada, por gentileza refaça o processo");
     }
+
+    /*@PostMapping("/buscaAlteracoesLimitePorLoja")
+    public ModelAndView buscaAlteracoesLimitePorLoja(String status, @Nullable String cpfCnpj,
+                                                     @Nullable String dataSolicitadoInicio,
+                                                     @Nullable String dataSolicitadoFim,
+                                                     HttpServletRequest httpServletRequest) {
+        if ((cpfCnpj == null || cpfCnpj.equals("")) && (dataSolicitadoInicio == null || dataSolicitadoInicio.equals("")) && (status == null || status.equals(""))) {
+            return alteraLimiteService.buscaListaAlterarLimite(httpServletRequest, Optional.of(Integer.valueOf(lojaSelecionada)), false, Optional.empty(), Optional.empty(), Optional.empty()).get();
+        } else {
+            List<Pedido> pedidos = pedidoService.findAll();
+            return new ModelAndView("lista-pedidos").addObject("pedidos", pedidos);
+        }
+    }*/
 
 }

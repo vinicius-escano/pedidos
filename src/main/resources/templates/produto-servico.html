@@ -3,13 +3,13 @@
 
 <head>
     <title>Produto</title>
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-reboot.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-grid.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap-utilities.css">
-    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-reboot.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap-utilities.css">
+    <link rel="stylesheet" type="text/css" href="../../css/styles.css">
     <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Aldrich'>
-    <script src="js/script.js"></script>
+    <script src="../../js/script.js"></script>
 
 </head>
 
@@ -67,64 +67,134 @@
 
 <div class="container mt-3">
     <div class="boxborder form-row">
-        <select id="tipoItem" onchange="selecionaTipoItem();">
-            <option value="">Selecione o Tipo</option>
-            <option value="1">Produto</option>
-            <option value="2">Serviço</option>
-        </select>
-        <div id="tipoProduto" style="display: none;">
-            <form th:object="${produto}" th:action="@{/novoproduto}" method="POST">
-                <select th:field="*{tipo}" style="display: none;">
-                    <option value="PRODUTO">PRODUTO</option>
-                </select>
-                <div class="mt-4">
-                    <label class="form-labels">Nome/Descrição</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
-                </div>
-                <div class="mt-4">
-                    <label class="form-labels">Fabricante</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{fabricanteFornecedor}">
-                </div>
-                <div class="mt-3">
-                    <label class="form-labels">Valor Compra R$</label>
-                    <input class="form-inputs" style="width: 10%" th:field="*{valorCompra}">
-                    <label class="form-labels">Valor Venda R$:</label>
-                    <input class="form-inputs" style="width: 5%;" th:field="*{valorVenda}">
-                </div>
-                <div class="mt-3">
-                    <label class="form-labels ml-5">Quantidade Disponivel:</label>
-                    <input class="form-inputs" style="width: 7%;" th:field="*{quantidadeDisponivel}">
-                </div>
-                <button class="btn btn-primary">Salvar</button>
-            </form>
+        <div th:if="${!jaExiste}">
+            <select id="tipoItem" onchange="selecionaTipoItem();">
+                <option value="">Selecione o Tipo</option>
+                <option value="1">Produto</option>
+                <option value="2">Serviço</option>
+            </select>
+            <div id="tipoProduto" style="display: none;">
+                <form th:object="${produto}" th:action="@{/produto/novoproduto}" method="POST">
+                    <select th:field="*{tipo}" style="display: none;">
+                        <option value="PRODUTO">PRODUTO</option>
+                    </select>
+                    <div class="mt-4">
+                        <label class="form-labels">Nome/Descrição</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Fabricante</label>
+                        <input class="form-inputs" style="display: block; width: 100%;"
+                               th:field="*{fabricanteFornecedor}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels">Valor Compra R$</label>
+                        <input class="form-inputs" style="width: 10%" th:field="*{valorCompra}">
+                        <label class="form-labels">Valor Venda R$:</label>
+                        <input class="form-inputs" style="width: 5%;" th:field="*{valorVenda}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels ml-5">Quantidade Disponivel:</label>
+                        <input class="form-inputs" style="width: 7%;" th:field="*{quantidadeDisponivel}">
+                    </div>
+                    <button class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+            <div id="tipoServico" style="display: none;">
+                <form th:object="${servico}" th:action="@{/produto/novoproduto}" method="POST">
+                    <select th:field="*{tipo}" style="display: none;">
+                        <option value="SERVICO">SERVICO</option>
+                    </select>
+                    <div class="mt-4">
+                        <label class="form-labels">Nome/Descrição</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Fornecedor</label>
+                        <input class="form-inputs" style="display: block; width: 100%;"
+                               th:field="*{fabricanteFornecedor}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Codigo ISS</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{codigoISS}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Aliquota</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{aliquota}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels">Valor Servico R$</label>
+                        <input class="form-inputs" style="width: 10%" th:field="*{valorVenda}">
+                    </div>
+                    <button class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
         </div>
-        <div id="tipoServico" style="display: none;">
-            <form th:object="${servico}" th:action="@{/novoservico}" method="POST">
-                <select th:field="*{tipo}" style="display: none;">
-                    <option value="SERVICO">SERVICO</option>
-                </select>
-                <div class="mt-4">
-                    <label class="form-labels">Nome/Descrição</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
-                </div>
-                <div class="mt-4">
-                    <label class="form-labels">Fornecedor</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{fabricanteFornecedor}">
-                </div>
-                <div class="mt-4">
-                    <label class="form-labels">Codigo ISS</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{codigoISS}">
-                </div>
-                <div class="mt-4">
-                    <label class="form-labels">Aliquota</label>
-                    <input class="form-inputs" style="display: block; width: 100%;" th:field="*{aliquota}">
-                </div>
-                <div class="mt-3">
-                    <label class="form-labels">Valor Servico R$</label>
-                    <input class="form-inputs" style="width: 10%" th:field="*{valorVenda}">
-                </div>
-                <button class="btn btn-primary">Salvar</button>
-            </form>
+        <div th:if="${jaExiste and isProduto}">
+            <div>
+                <form th:object="${produto}" th:action="@{/produto/updateprodutoservico}" method="POST">
+                    <label>Tipo: <span th:text="*{tipo}"></span></label><br>
+                    <label>ID: <span th:text="*{id}"></span> </label><br>
+                    <label>Ativo: <span th:text="${produto.ativo} ? 'Sim' : 'Não'"></span></label>
+                    <div class="mt-4">
+                        <label class="form-labels">Nome/Descrição</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Fabricante</label>
+                        <input class="form-inputs" style="display: block; width: 100%;"
+                               th:field="*{fabricanteFornecedor}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels">Valor Compra R$</label>
+                        <input class="form-inputs" style="width: 10%" th:field="*{valorCompra}">
+                        <label class="form-labels">Valor Venda R$:</label>
+                        <input class="form-inputs" style="width: 5%;" th:field="*{valorVenda}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels ml-5">Quantidade Disponivel:</label>
+                        <input class="form-inputs" style="width: 7%;" th:field="*{quantidadeDisponivel}">
+                    </div>
+                    <button class="btn btn-primary" type="submit"><b>Salvar Alterações</b></button>
+                    <a th:if="${produto.ativo}" th:href="@{'/produto/desativaproduto/{id}'(id=${produto.id})}" class="btn btn-warning" type="submit" id="desativar" name="desativar"><b>Desativar</b></a>
+                    <a th:if="${!produto.ativo}" th:href="@{'/produto/ativarproduto/{id}'(id=${produto.id})}" class="btn btn-info" type="submit" id="ativar" name="ativar"><b>Ativar</b></a>
+                    <a th:href="@{'/produto/excluiproduto/{id}'(id=${produto.id})}" class="btn btn-danger" type="submit" id="excluir" name="excluir"><b>Excluir</b></a>
+                </form>
+            </div>
+        </div>
+        <div th:if="${jaExiste and isServico}">
+            <div>
+                <form th:object="${servico}" th:action="@{/produto/updateprodutoservico}" method="POST">
+                    <label>ID: <span th:text="*{id}"></span> </label>
+                    <label>Tipo: <span th:text="*{tipo}"></span></label><br>
+                    <label>Ativo: <span th:text="${produto.ativo} ? 'Sim' : 'Não'"></span></label>
+                    <div class="mt-4">
+                        <label class="form-labels">Nome/Descrição</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{nomeDescricao}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Fornecedor</label>
+                        <input class="form-inputs" style="display: block; width: 100%;"
+                               th:field="*{fabricanteFornecedor}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Codigo ISS</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{codigoISS}">
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-labels">Aliquota</label>
+                        <input class="form-inputs" style="display: block; width: 100%;" th:field="*{aliquota}">
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-labels">Valor Servico R$</label>
+                        <input class="form-inputs" style="width: 10%" th:field="*{valorVenda}">
+                    </div>
+                    <button class="btn btn-primary" type="submit"><b>Salvar Alterações</b></button>
+                    <a th:if="${produto.ativo}" th:href="@{'/produto/desativaproduto/{id}'(id=${produto.id})}" class="btn btn-warning" type="submit" id="desativarServico" name="desativarServico"><b>Desativar</b></a>
+                    <a th:if="${!produto.ativo}" th:href="@{'/produto/ativarproduto/{id}'(id=${produto.id})}" class="btn btn-info" type="submit" id="ativarServico" name="ativarServico"><b>Ativar</b></a>
+                    <a th:href="@{'/produto/excluiproduto/{id}'(id=${produto.id})}" class="btn btn-danger" type="submit" id="excluirServico" name="excluirServico"><b>Excluir</b></a>
+                </form>
+            </div>
         </div>
     </div>
 </div>
