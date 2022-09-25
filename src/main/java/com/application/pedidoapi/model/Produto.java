@@ -1,20 +1,31 @@
 package com.application.pedidoapi.model;
 
+import com.application.pedidoapi.dto.ProdutoDTO;
 import com.application.pedidoapi.enums.Tipo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.type.UUIDCharType;
 
 import javax.persistence.*;
 import java.util.UUID;
 
-@Data
+@SqlResultSetMapping(name = "ProdutoResults", classes = {
+        @ConstructorResult(targetClass = ProdutoDTO.class, columns = {
+                @ColumnResult(name = "ID", type = UUID.class),
+                @ColumnResult(name = "TIPO", type = Tipo.class),
+                @ColumnResult(name = "NOME_DESCRICAO", type = String.class),
+                @ColumnResult(name = "FABRICANTE_FORNECEDOR", type = String.class),
+                @ColumnResult(name = "VALOR_COMPRA", type = Double.class),
+                @ColumnResult(name = "VALOR_VENDA", type = Double.class),
+                @ColumnResult(name = "QUANTIDADE_DISPONIVEL", type = Double.class),
+                @ColumnResult(name = "CODIGO_ISS", type = Integer.class),
+                @ColumnResult(name = "ALIQUOTA", type = Double.class),
+                @ColumnResult(name = "ATIVO", type = Double.class)})})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tb_produto")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)

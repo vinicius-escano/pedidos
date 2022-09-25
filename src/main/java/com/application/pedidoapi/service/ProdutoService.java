@@ -4,7 +4,7 @@ import com.application.pedidoapi.enums.Tipo;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.model.Produto;
-import com.application.pedidoapi.repository.ProdutoRepository;
+import com.application.pedidoapi.repository.ProdutoJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +19,13 @@ import java.util.UUID;
 public class ProdutoService {
 
     @Autowired
-    ProdutoRepository produtoRepository;
+    ProdutoJPARepository produtoJPARepository;
 
     @Autowired
     private PedidoItemService pedidoItemService;
 
     public Optional<Produto> save(Produto produto) {
-        Optional<Produto> opProduto = Optional.ofNullable(produtoRepository.save(produto));
+        Optional<Produto> opProduto = Optional.ofNullable(produtoJPARepository.save(produto));
         if (opProduto.isPresent()) {
             return opProduto;
         }
@@ -33,31 +33,31 @@ public class ProdutoService {
     }
 
     public Optional<Produto> findById(UUID id) {
-        return produtoRepository.findById(id);
+        return produtoJPARepository.findById(id);
     }
 
     public List<Produto> findAll() {
-        return produtoRepository.findAll();
+        return produtoJPARepository.findAll();
     }
 
     public Page<Produto> findAll(Pageable pageable) {
-        return produtoRepository.findAll(pageable);
+        return produtoJPARepository.findAll(pageable);
     }
 
     public List<Produto> findProdutoByDescricao(String descricao) {
-        return produtoRepository.findByDescricao(descricao, Tipo.PRODUTO);
+        return produtoJPARepository.findByDescricao(descricao, Tipo.PRODUTO);
     }
 
     public List<Produto> findServicoByDescricao(String descricao) {
-        return produtoRepository.findByDescricao(descricao, Tipo.SERVICO);
+        return produtoJPARepository.findByDescricao(descricao, Tipo.SERVICO);
     }
 
     public Page<Produto> findAllByDescricaoPageable(String nomeDescricao, Pageable pageable) {
-        return produtoRepository.findByDescricaoPageable(nomeDescricao, pageable);
+        return produtoJPARepository.findByDescricaoPageable(nomeDescricao, pageable);
     }
 
     public Optional<Produto> update(Produto pedido) {
-        Optional<Produto> opProduto = Optional.ofNullable(produtoRepository.saveAndFlush(pedido));
+        Optional<Produto> opProduto = Optional.ofNullable(produtoJPARepository.saveAndFlush(pedido));
         if (opProduto.isPresent()) {
             return opProduto;
         }
@@ -69,7 +69,7 @@ public class ProdutoService {
             pedidosPendentes.addAll(pedidoItens);
             return false;
         }
-        produtoRepository.delete(produto);
+        produtoJPARepository.delete(produto);
         Optional<Produto> deleteValidation = findById(produto.getId());
         if(!deleteValidation.isPresent()){
             return true;
@@ -79,11 +79,11 @@ public class ProdutoService {
 
     public void alteraEstoque(Pedido pedido) {
         pedido.getItensPedido().stream().forEach(item -> {
-            Optional<Produto> opProduto = produtoRepository.findById(item.getProduto().getId());
+            Optional<Produto> opProduto = produtoJPARepository.findById(item.getProduto().getId());
             if (opProduto.isPresent()) {
                 if (!(item.getQuantidadeSolicitada() > opProduto.get().getQuantidadeDisponivel())) {
                     opProduto.get().setQuantidadeDisponivel(opProduto.get().getQuantidadeDisponivel() - item.getQuantidadeSolicitada());
-                    produtoRepository.save(opProduto.get());
+                    produtoJPARepository.save(opProduto.get());
                 }
             }
         });
@@ -92,8 +92,8 @@ public class ProdutoService {
 
     public List<Produto> findAll(Tipo tipo) {
         if (tipo.equals(Tipo.SERVICO)) {
-            return produtoRepository.findAllByTipo(Tipo.SERVICO);
+            return produtoJPARepository.findAllByTipo(Tipo.SERVICO);
         }
-        return produtoRepository.findAllByTipo(Tipo.PRODUTO);
+        return produtoJPARepository.findAllByTipo(Tipo.PRODUTO);
     }
 }

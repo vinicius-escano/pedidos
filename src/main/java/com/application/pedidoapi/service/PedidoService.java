@@ -4,17 +4,13 @@ import com.application.pedidoapi.enums.SituacaoPedido;
 import com.application.pedidoapi.enums.Tipo;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
-import com.application.pedidoapi.model.Produto;
-import com.application.pedidoapi.repository.PedidoRepository;
-import com.application.pedidoapi.utils.PageUtil;
+import com.application.pedidoapi.repository.PedidoJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +21,7 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
     @Autowired
-    PedidoRepository pedidoRepository;
+    PedidoJPARepository pedidoJPARepository;
 
     @Autowired
     private PedidoItemService pedidoItemService;
@@ -34,7 +30,7 @@ public class PedidoService {
     private ProdutoService produtoService;
 
     public Optional<Pedido> save(Pedido pedido){
-        Optional<Pedido> opPedido = Optional.ofNullable(pedidoRepository.save(pedido));
+        Optional<Pedido> opPedido = Optional.ofNullable(pedidoJPARepository.save(pedido));
         if(opPedido.isPresent()){
             return opPedido;
         }
@@ -46,24 +42,24 @@ public class PedidoService {
     }
 
     public List<Pedido> findAll(){
-        return pedidoRepository.findAll();
+        return pedidoJPARepository.findAll();
     }
 
     public Optional<Pedido> findById(UUID uuid){
-        return pedidoRepository.findById(uuid);
+        return pedidoJPARepository.findById(uuid);
     }
 
     public Page<Pedido> findAll(Pageable pageable) {
-        return pedidoRepository.findAll(pageable);
+        return pedidoJPARepository.findAll(pageable);
     }
 
     public Page<Pedido> findAllByStatus(SituacaoPedido situacaoPedido, Pageable pageable) {
-        return pedidoRepository.findBySituacaoPedidoEquals(situacaoPedido, pageable);
+        return pedidoJPARepository.findBySituacaoPedidoEquals(situacaoPedido, pageable);
     }
 
     public boolean delete(Pedido pedido) {
         pedidoItemService.delete(pedido.getItensPedido());
-        pedidoRepository.delete(pedido);
+        pedidoJPARepository.delete(pedido);
         return true;
     }
 
@@ -75,7 +71,7 @@ public class PedidoService {
         principal.setValorTotal(pedido.getValorTotal());
         principal.setPedidoSituacao(SituacaoPedido.EM_ABERTO);
         principal.setCadastradoEm(LocalDateTime.now());
-        Pedido saved = pedidoRepository.save(principal);
+        Pedido saved = pedidoJPARepository.save(principal);
         pedido.getItensPedido().stream().forEach(item -> {
             item.setPedido(saved);
         });
@@ -86,12 +82,12 @@ public class PedidoService {
 
     public Pedido updateConfirmado(Pedido pedido) {
         pedido.setPedidoSituacao(SituacaoPedido.CONFIRMADO);
-        return pedidoRepository.save(pedido);
+        return pedidoJPARepository.save(pedido);
     }
 
     public Pedido updateCancelado(Pedido pedido) {
         pedido.setPedidoSituacao(SituacaoPedido.CANCELADO);
-        return pedidoRepository.save(pedido);
+        return pedidoJPARepository.save(pedido);
     }
 
     public boolean aplicaDesconto(Pedido pedido, double percentual) {
@@ -129,7 +125,7 @@ public class PedidoService {
     }
 
     public Optional<Pedido> buscaMontaPedidoVisualizacao(String uuid) {
-        Optional<Pedido> opPedido = pedidoRepository.findById(UUID.fromString(uuid));
+        Optional<Pedido> opPedido = pedidoJPARepository.findById(UUID.fromString(uuid));
         if(opPedido.isPresent()){
             List<PedidoItem> itens = pedidoItemService.findAllByPedidoId(opPedido.get());
             if(!itens.isEmpty()){

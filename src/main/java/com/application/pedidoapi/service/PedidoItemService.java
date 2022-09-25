@@ -3,6 +3,7 @@ package com.application.pedidoapi.service;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.model.Produto;
+import com.application.pedidoapi.repository.PedidoItemJPARepository;
 import com.application.pedidoapi.repository.PedidoItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,10 +18,13 @@ import java.util.UUID;
 public class PedidoItemService {
 
     @Autowired
+    PedidoItemJPARepository pedidoItemJPARepository;
+
+    @Autowired
     PedidoItemRepository pedidoItemRepository;
 
     public Optional<PedidoItem> save(PedidoItem pedidoItem){
-        Optional<PedidoItem> opPedidoItem = Optional.ofNullable(pedidoItemRepository.save(pedidoItem));
+        Optional<PedidoItem> opPedidoItem = Optional.ofNullable(pedidoItemJPARepository.save(pedidoItem));
         if(opPedidoItem.isPresent()){
             return opPedidoItem;
         }
@@ -28,11 +32,11 @@ public class PedidoItemService {
     }
 
     public List<PedidoItem> saveAll(List<PedidoItem> pedidoItens){
-        return pedidoItemRepository.saveAll(pedidoItens);
+        return pedidoItemJPARepository.saveAll(pedidoItens);
     }
 
     public List<PedidoItem> findAllByPedidoId(Pedido pedido) {
-        return pedidoItemRepository.findAllByPedidoId(pedido);
+        return pedidoItemJPARepository.findAllByPedidoId(pedido);
     }
 
     public Optional<PedidoItem> update(PedidoItem pedidoItem) {
@@ -40,7 +44,7 @@ public class PedidoItemService {
     }
 
     public Optional<PedidoItem> findById(UUID uuid) {
-        Optional<PedidoItem> opPedidoItem = pedidoItemRepository.findById(uuid);
+        Optional<PedidoItem> opPedidoItem = pedidoItemJPARepository.findById(uuid);
         if (opPedidoItem.isEmpty()) {
             return opPedidoItem;
         }
@@ -51,21 +55,31 @@ public class PedidoItemService {
 
 
     public Page<PedidoItem> findAll(Pageable pageable) {
-        return pedidoItemRepository.findAll(pageable);
+        return pedidoItemJPARepository.findAll(pageable);
+    }
+
+    public List<PedidoItem> findAll() {
+        return pedidoItemJPARepository.findAll();
     }
 
 
     public boolean delete(PedidoItem pedidoItem) {
-        pedidoItemRepository.delete(pedidoItem);
+        pedidoItemJPARepository.delete(pedidoItem);
         return true;
     }
 
     public boolean delete(List<PedidoItem> pedidoItens) {
-        pedidoItemRepository.deleteAll(pedidoItens);
+        for(PedidoItem pi: pedidoItens){
+            pedidoItemJPARepository.delete(pi);
+        }
         return true;
     }
 
     public List<PedidoItem> findAllWithProduto(Produto produto) {
-        return pedidoItemRepository.findAllWithProduto(produto);
+        return pedidoItemJPARepository.findAllWithProduto(produto);
+    }
+
+    public List<PedidoItem> findPedidoItemByProdutoId(UUID uuid){
+        return pedidoItemRepository.findPedidoItemByProdutoId(uuid);
     }
 }
