@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 public class PageUtil {
 
-    private static final int rowsPerPage = 15;
+    private static final int rowsPerPage = 5;
 
     public static Pageable getPageable(int page) {
         return PageRequest.of(page, rowsPerPage);

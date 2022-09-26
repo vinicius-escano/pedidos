@@ -12,7 +12,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,14 +36,17 @@ public class PedidoItemJPARepositorytest {
     @MockBean
     PedidoJPARepository pedidoJPARepository;
 
-    @InjectMocks
+    @MockBean
+    PedidoItemJPARepository pedidoItemJPARepository;
+
+    @MockBean
     PedidoItemService pedidoItemService;
 
     @InjectMocks
-    PedidoService pedidoService;
+    PedidoItemService piService;
 
-    @Mock
-    PedidoItemJPARepository pedidoItemJPARepository;
+    @InjectMocks
+    PedidoService pedidoService;
 
     private static UUID CODIGO_PEDIDO;
 
@@ -59,7 +61,7 @@ public class PedidoItemJPARepositorytest {
         pedidoItem.setId(null);
 
         // When
-        Optional<PedidoItem> opPedidoItem = pedidoItemService.save(pedidoItem);
+        Optional<PedidoItem> opPedidoItem = piService.save(pedidoItem);
 
         //Then
         verify(pedidoItemJPARepository).save(pedidoItem);
@@ -136,7 +138,7 @@ public class PedidoItemJPARepositorytest {
     @Order(7)
     public void delete() {
         // Given
-        when(pedidoItemService.delete(anyList())).thenReturn(true);
+        when(pedidoItemService.delete(anyList())).thenReturn(false);
         doNothing().when(pedidoJPARepository).delete(any());
 
         // When

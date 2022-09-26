@@ -66,9 +66,10 @@ INSERT INTO tb_produto (id, ativo, nome_descricao, fabricante_fornecedor, valor_
 ('2f3f153a-3c8a-11ed-a261-0242ac120002', true, 'Montagem', 'Serralheria do Kleiton', 0.0, 70.00, 0.0,'SERVICO');
 
 insert into tb_pedido (cadastrado_em, cpf_cpnj_comprador, desconto, situacao_pedido, valor_produtos, valor_servicos, valor_total, id) values
-('now()', '216.545.750-54', 12.0, 'CONFIRMADO', 250.00, 0.0, 220.0, 'd02e1784-3d1b-11ed-b878-0242ac120002'),
-('now()', '296.808.390-28', 10.0, 'EM_ABERTO', 200.00, 50.0, 230.0, 'bac6cf20-3d1c-11ed-b878-0242ac120002'),
-('now()', '056.894.030-08', 0.0, 'CANCELADO', 100.00, 50.0, 150.0, 'c1ed96a8-3d1c-11ed-b878-0242ac120002');
+('NOW()', '216.545.750-54', 12.0, 'CONFIRMADO', 250.00, 0.0, 220.0, 'd02e1784-3d1b-11ed-b878-0242ac120002'),
+('NOW()', '296.808.390-28', 10.0, 'EM_ABERTO', 200.00, 50.0, 230.0, 'bac6cf20-3d1c-11ed-b878-0242ac120002'),
+('NOW()', '056.894.030-08', 0.0, 'CANCELADO', 100.00, 50.0, 150.0, 'c1ed96a8-3d1c-11ed-b878-0242ac120002'),
+('NOW()', '123.894.330-08', 0.0, 'EM_ABERTO', 0.0, 100.0, 100.0, 'c1ed69a8-3d1c-11ed-b878-0242ac120002');
 
 insert into tb_pedido_item (codigo_pedido, codigo_produto, quantidade_solicitada, valor_cobrado_unidade, valor_total, id) values
 ('bac6cf20-3d1c-11ed-b878-0242ac120002', '760f2af6-3ba2-11ed-a261-0242ac120002', 8.0, 25.00, 200.0, '5abbe604-3d1e-11ed-b878-0242ac120002'),
@@ -76,7 +77,8 @@ insert into tb_pedido_item (codigo_pedido, codigo_produto, quantidade_solicitada
 ('bac6cf20-3d1c-11ed-b878-0242ac120002', '1aa6fe9e-3c8a-11ed-a261-0242ac120002', 1.0, 50.0, 50.0, '670f36f4-3d1e-11ed-b878-0242ac120002'),
 ('c1ed96a8-3d1c-11ed-b878-0242ac120002', '5d41d244-3ba2-11ed-a261-0242ac120002', 1.0, 37.20, 37.20, '6bbde0e2-3d1e-11ed-b878-0242ac120002'),
 ('c1ed96a8-3d1c-11ed-b878-0242ac120002', '66fb85c8-3ba2-11ed-a261-0242ac120002', 1.0, 62.80, 62.80, '6f9dab16-3d1e-11ed-b878-0242ac120002'),
-('c1ed96a8-3d1c-11ed-b878-0242ac120002', '15298bd0-3c8a-11ed-a261-0242ac120002', 1.0, 50.0, 50.0, '73ef0b92-3d1e-11ed-b878-0242ac120002');
+('c1ed69a8-3d1c-11ed-b878-0242ac120002', '1aa6fe9e-3c8a-11ed-a261-0242ac120002', 2.0, 50.0, 50.0, '73ef0b92-3d1e-11ed-b878-0242ac120002'),
+('c1ed96a8-3d1c-11ed-b878-0242ac120002', '15298bd0-3c8a-11ed-a261-0242ac120002', 1.0, 50.0, 50.0, 'e6e14532-3d43-11ed-b878-0242ac120002');
 
 
 

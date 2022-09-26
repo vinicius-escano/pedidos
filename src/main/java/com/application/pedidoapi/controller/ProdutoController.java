@@ -1,20 +1,20 @@
 package com.application.pedidoapi.controller;
 
 import com.application.pedidoapi.enums.Tipo;
-import com.application.pedidoapi.exception.NotFoundException;
+import com.application.pedidoapi.exception.BadRequestException;
 import com.application.pedidoapi.exception.SessaoExpiradaException;
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.model.Produto;
 import com.application.pedidoapi.service.ProdutoService;
 import com.application.pedidoapi.utils.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,31 +28,37 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping("/save")
-    ResponseEntity<Produto> save(@RequestBody @Valid Produto produto) {
-        Optional<Produto> opProduto = produtoService.save(produto);
-        if (opProduto.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+    ResponseEntity<Produto> save(@RequestBody Produto produto) {
+        try {
+            Optional<Produto> opProduto = produtoService.save(produto);
+            if (opProduto.isEmpty()) {
+                throw new BadRequestException("Não foi possivel salvar o produto, verifique os dados e tente novamente");
+            }
+            return ResponseEntity.ok(opProduto.get());
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException("Não foi possivel salvar o produto, verifique os dados e tente novamente - DataIntegrityViolationException");
         }
-
-        return ResponseEntity.ok(opProduto.get());
     }
 
     @PutMapping("/update")
-    ResponseEntity<Produto> update(@RequestBody @Valid Produto pedido) {
-        Optional<Produto> opProduto = produtoService.update(pedido);
-        if (opProduto.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+    ResponseEntity<Produto> update(@RequestBody Produto produto) {
+        try {
+            Optional<Produto> opProduto = produtoService.save(produto);
+            if (opProduto.isEmpty()) {
+                throw new BadRequestException("Não foi possivel salvar o produto, verifique os dados e tente novamente");
+            }
+            return ResponseEntity.ok(opProduto.get());
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException("Não foi possivel salvar o produto, verifique os dados e tente novamente - DataIntegrityViolationException");
         }
-        return ResponseEntity.ok(opProduto.get());
     }
 
     @GetMapping("/{id}")
     ResponseEntity<Produto> findById(@PathVariable UUID id) {
         Optional<Produto> opProduto = produtoService.findById(id);
         if (opProduto.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Produto não encontrado, verifique o id informado");
         }
-
         return ResponseEntity.ok(opProduto.get());
     }
 
@@ -63,7 +69,6 @@ public class ProdutoController {
             pedidosPage = produtoService.findAll(PageUtil.getPageable(page));
             return ResponseEntity.ok(pedidosPage.getContent());
         }
-
         pedidosPage = produtoService.findAllByDescricaoPageable(descricao, PageUtil.getPageable(page));
         return ResponseEntity.ok(pedidosPage.getContent());
     }
@@ -72,15 +77,14 @@ public class ProdutoController {
     ResponseEntity<Produto> delete(@PathVariable UUID id) {
         Optional<Produto> opProduto = produtoService.findById(id);
         if (opProduto.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Produto não encontrado, verifique o id informado");
         }
         List<PedidoItem> pendencias = new ArrayList<>();
         boolean deleted = produtoService.delete(opProduto.get(), pendencias);
         if (deleted && pendencias.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-
-        return ResponseEntity.badRequest().build();
+        throw new BadRequestException("Falha ao excluir o produto! Existem pedidos associados ao mesmo.");
     }
 
 
@@ -100,8 +104,8 @@ public class ProdutoController {
         try {
             List<Produto> listProdutos = produtoService.findAll(Tipo.PRODUTO);
             return new ModelAndView("estoque").addObject("produtos", listProdutos);
-        } catch (NotFoundException ex) {
-            throw new NotFoundException("Recurso não encontrado");
+        } catch (BadRequestException ex) {
+            throw new BadRequestException("Recurso não encontrado");
         }
     }
 
@@ -110,8 +114,8 @@ public class ProdutoController {
         try {
             List<Produto> listProdutos = produtoService.findAll(Tipo.SERVICO);
             return new ModelAndView("estoque").addObject("produtos", listProdutos);
-        } catch (NotFoundException ex) {
-            throw new NotFoundException("Recurso não encontrado");
+        } catch (BadRequestException ex) {
+            throw new BadRequestException("Recurso não encontrado");
         }
     }
 
@@ -152,7 +156,7 @@ public class ProdutoController {
     @GetMapping("/desativaproduto/{id}")
     public ModelAndView updateDesativaProduto(@PathVariable("id") String id) {
         Optional<Produto> opProduto = produtoService.findById(UUID.fromString(id));
-        if(opProduto.isPresent()){
+        if (opProduto.isPresent()) {
             opProduto.get().setAtivo(false);
         }
         Optional<Produto> updatedProduto = produtoService.update(opProduto.get());
@@ -170,7 +174,7 @@ public class ProdutoController {
     @GetMapping("/ativarproduto/{id}")
     public ModelAndView updateAtivarProduto(@PathVariable("id") String id) {
         Optional<Produto> opProduto = produtoService.findById(UUID.fromString(id));
-        if(opProduto.isPresent()){
+        if (opProduto.isPresent()) {
             opProduto.get().setAtivo(true);
         }
         Optional<Produto> updatedProduto = produtoService.update(opProduto.get());
@@ -188,7 +192,7 @@ public class ProdutoController {
     @GetMapping("/excluiproduto/{id}")
     public ModelAndView deleteProduto(@PathVariable("id") String id) {
         Optional<Produto> opProduto = produtoService.findById(UUID.fromString(id));
-        if(opProduto.isPresent()) {
+        if (opProduto.isPresent()) {
             List<PedidoItem> pendencia = new ArrayList<>();
             if (produtoService.delete(opProduto.get(), pendencia)) {
                 return new ModelAndView("produto-delete-response")

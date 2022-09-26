@@ -2,6 +2,7 @@ package com.application.pedidoapi.controller;
 
 import com.application.pedidoapi.enums.SituacaoPedido;
 import com.application.pedidoapi.enums.Tipo;
+import com.application.pedidoapi.exception.BadRequestException;
 import com.application.pedidoapi.exception.SessaoExpiradaException;
 import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
@@ -13,6 +14,7 @@ import com.application.pedidoapi.utils.DataErrorHandler;
 import com.application.pedidoapi.utils.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -87,12 +89,33 @@ public class PedidoController {
             return ResponseEntity.badRequest().build();
         }
 
-        boolean deleted = pedidoService.delete(opPedido.get());
-        if (deleted) {
-            return ResponseEntity.noContent().build();
+        if (opPedido.get().getPedidoSituacao().equals(SituacaoPedido.EM_ABERTO)) {
+            boolean deleted = pedidoService.delete(opPedido.get());
+            if (deleted) {
+                return ResponseEntity.noContent().build();
+            }
+        } else {
+
         }
 
         return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/desconto/{id}")
+    ResponseEntity<Pedido> aplicarDesconto(@PathVariable UUID id,@RequestParam("perc") Double perc) {
+        Optional<Pedido> opPedido = pedidoService.findById(id);
+        if (opPedido.isEmpty()) {
+            throw new BadRequestException("Pedido não encontrado, verifique o codigo");
+        }
+        if(!opPedido.get().getPedidoSituacao().toString().equals(SituacaoPedido.EM_ABERTO.toString())){
+            throw new BadRequestException("Pedido não esta 'EM_ABERTO' para aplicar desconto");
+        }
+        List<PedidoItem> itens = pedidoItemService.findAllByPedidoId(opPedido.get());
+        opPedido.get().setItensPedido(itens);
+        if(pedidoService.aplicaDesconto(opPedido.get(), perc)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        throw new BadRequestException("Não há itens do tipo 'PRODUTO' para aplicar desconto");
     }
 
 
@@ -177,7 +200,7 @@ public class PedidoController {
     public ModelAndView efetivarPedido(HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
         if (opPedido.isPresent()) {
-            if(opPedido.get().getItensPedido().isEmpty()){
+            if (opPedido.get().getItensPedido().isEmpty()) {
                 return DataErrorHandler.throwMessage("Não é possivel efetivar um pedido sem itens!");
             }
             pedidoService.calculaValoresTiposPedidos(opPedido.get());

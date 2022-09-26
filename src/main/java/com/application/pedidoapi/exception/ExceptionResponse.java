@@ -1,5 +1,7 @@
 package com.application.pedidoapi.exception;
 
+import org.springframework.http.HttpStatus;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,6 +13,12 @@ public class ExceptionResponse implements Serializable {
 
     public ExceptionResponse(Date timestamp, String message, String details) {
         this.timestamp = timestamp;
+        this.message = message;
+        this.details = details;
+    }
+
+    public ExceptionResponse(HttpStatus badRequest, String message, String details) {
+        this.timestamp = new Date();
         this.message = message;
         this.details = details;
     }
