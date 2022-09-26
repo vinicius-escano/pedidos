@@ -154,7 +154,7 @@ public class PedidoController {
                 pEncontrados = produtoService.findServicoByDescricao(descricaoItem);
             }
             if (!pEncontrados.isEmpty()) {
-                List<Produto> filteredList = pEncontrados.stream().filter(p -> p.isAtivo() && p.getQuantidadeDisponivel() > 0.0).collect(Collectors.toList());
+                List<Produto> filteredList = pEncontrados.stream().filter(p -> p.isAtivo()).collect(Collectors.toList());
                 httpServletRequest.getSession().setAttribute("itensEncontrados", filteredList);
                 return new ModelAndView("novo-pedido").addObject("itensEncontrados", filteredList).addObject("pedido", opPedido.get());
             }
@@ -170,6 +170,9 @@ public class PedidoController {
             List<Produto> encontrados = (List<Produto>) httpServletRequest.getSession().getAttribute("itensEncontrados");
             Optional<Produto> produtoAdicionar = produtoService.findById(encontrados.get(index).getId());
             if (produtoAdicionar.isPresent()) {
+                if(produtoAdicionar.get().getTipo().toString().equals(Tipo.PRODUTO.toString()) && produtoAdicionar.get().getQuantidadeDisponivel() < qtdeSolicitada){
+                    return new ModelAndView("invalid-data-errorhandler").addObject("message", "Não é possivel pedir mais do que a quantidade disponivel");
+                }
                 PedidoItem pedidoItem = new PedidoItem(produtoAdicionar.get(), qtdeSolicitada);
                 opPedido.get().getItensPedido().add(pedidoItem);
                 opPedido.get().setValorTotal(opPedido.get().getValorTotal() + pedidoItem.getValorTotal());
