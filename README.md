@@ -7,7 +7,7 @@ API para gestão de Pedido para teste back-end java nivel III.
 - Lombok
 - pgAdmin
 - Criar uma base de dados chamada 'db_pedidos' na porta padrão do postgres (5432) ou alterar o nome do servidor na property `spring.datasource.url` no arquivo application.properties
-- Dentro da pasta do projeto rodar o comando `mvn package clean install` para criar as 'QObject' da queryDSL
+- Dentro da pasta do projeto rodar o comando `mvn package clean install -DskipTests` para criar as 'QObject' da queryDSL
 - Para rodar os testes das controllers importar o script "Insomnia Tests" dentro do Insomnia
 
 Executar o programa dentro da IDE normalmente ou pelo comando `java -jar arquivo.jar` na pasta target
