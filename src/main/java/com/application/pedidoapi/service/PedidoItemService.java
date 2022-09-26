@@ -58,6 +58,10 @@ public class PedidoItemService {
         return pedidoItemJPARepository.findAll(pageable);
     }
 
+    public Page<PedidoItem> findAllPorQuantidade(double qtde, Pageable pageable) {
+        return pedidoItemJPARepository.findAllPorQuantidade(qtde, pageable);
+    }
+
     public List<PedidoItem> findAll() {
         return pedidoItemJPARepository.findAll();
     }

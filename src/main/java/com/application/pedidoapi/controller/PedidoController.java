@@ -86,7 +86,7 @@ public class PedidoController {
     ResponseEntity<Pedido> delete(@PathVariable UUID id) {
         Optional<Pedido> opPedido = pedidoService.findById(id);
         if (opPedido.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Pedido não existe");
         }
 
         if (opPedido.get().getPedidoSituacao().equals(SituacaoPedido.EM_ABERTO)) {
@@ -95,24 +95,24 @@ public class PedidoController {
                 return ResponseEntity.noContent().build();
             }
         } else {
-
+            throw new BadRequestException("Pedido com status diferente de 'EM_ABERTO'");
         }
 
         return ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/desconto/{id}")
-    ResponseEntity<Pedido> aplicarDesconto(@PathVariable UUID id,@RequestParam("perc") Double perc) {
+    ResponseEntity<Pedido> aplicarDesconto(@PathVariable UUID id, @RequestParam("perc") Double perc) {
         Optional<Pedido> opPedido = pedidoService.findById(id);
         if (opPedido.isEmpty()) {
             throw new BadRequestException("Pedido não encontrado, verifique o codigo");
         }
-        if(!opPedido.get().getPedidoSituacao().toString().equals(SituacaoPedido.EM_ABERTO.toString())){
+        if (!opPedido.get().getPedidoSituacao().toString().equals(SituacaoPedido.EM_ABERTO.toString())) {
             throw new BadRequestException("Pedido não esta 'EM_ABERTO' para aplicar desconto");
         }
         List<PedidoItem> itens = pedidoItemService.findAllByPedidoId(opPedido.get());
         opPedido.get().setItensPedido(itens);
-        if(pedidoService.aplicaDesconto(opPedido.get(), perc)){
+        if (pedidoService.aplicaDesconto(opPedido.get(), perc)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         throw new BadRequestException("Não há itens do tipo 'PRODUTO' para aplicar desconto");
@@ -120,6 +120,7 @@ public class PedidoController {
 
 
     //mapping front
+
     @GetMapping("/novoPedido")
     public ModelAndView novoPedido(HttpServletRequest httpServletRequest) {
         Pedido pedido = new Pedido();
@@ -170,7 +171,7 @@ public class PedidoController {
             List<Produto> encontrados = (List<Produto>) httpServletRequest.getSession().getAttribute("itensEncontrados");
             Optional<Produto> produtoAdicionar = produtoService.findById(encontrados.get(index).getId());
             if (produtoAdicionar.isPresent()) {
-                if(produtoAdicionar.get().getTipo().toString().equals(Tipo.PRODUTO.toString()) && produtoAdicionar.get().getQuantidadeDisponivel() < qtdeSolicitada){
+                if (produtoAdicionar.get().getTipo().toString().equals(Tipo.PRODUTO.toString()) && produtoAdicionar.get().getQuantidadeDisponivel() < qtdeSolicitada) {
                     return new ModelAndView("invalid-data-errorhandler").addObject("message", "Não é possivel pedir mais do que a quantidade disponivel");
                 }
                 PedidoItem pedidoItem = new PedidoItem(produtoAdicionar.get(), qtdeSolicitada);
@@ -214,13 +215,21 @@ public class PedidoController {
         throw new SessaoExpiradaException("Sessão expirada, por gentileza refaça o processo");
     }
 
+    @PostMapping("/efetivarpendente")
+    public ModelAndView efetivarPendente(HttpServletRequest httpServletRequest){
+        Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
+        if(opPedido.isPresent()){
+            return new ModelAndView("pedido-confirmacao").addObject("pedido", opPedido.get());
+        }
+        return DataErrorHandler.throwMessage("Erro ao recuperar dados do pedido");
+    }
+
     @GetMapping("/aplicadesconto")
     public ModelAndView aplicaDesconto(@RequestParam("perc") Double perc, HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
         if (opPedido.isPresent()) {
-            if (pedidoService.aplicaDesconto(opPedido.get(), perc)) {
-                return new ModelAndView("pedido-confirmacao").addObject("pedido", opPedido.get());
-            }
+            pedidoService.aplicaDesconto(opPedido.get(), perc);
+            return new ModelAndView("pedido-confirmacao").addObject("pedido", opPedido.get());
         }
         throw new SessaoExpiradaException("Sessão expirada, por gentileza refaça o processo");
     }
@@ -237,9 +246,10 @@ public class PedidoController {
     }
 
     @PostMapping("/confirmapedido")
-    public ModelAndView confirmaPedido(HttpServletRequest httpServletRequest) {
+    public ModelAndView confirmaPedido(@RequestParam("cpfCnpjComprador") String cpfCnpj, HttpServletRequest httpServletRequest) {
         Optional<Pedido> opPedido = Optional.ofNullable((Pedido) httpServletRequest.getSession().getAttribute("pedido"));
         if (opPedido.isPresent()) {
+            opPedido.get().setCpfCnpjComprador(cpfCnpj);
             Pedido savedPedido = pedidoService.confirmaPedido(opPedido.get());
             return new ModelAndView("pedido-finalizado").addObject("pedido", savedPedido);
         }
@@ -255,18 +265,5 @@ public class PedidoController {
         }
         throw new SessaoExpiradaException("Sessão expirada, por gentileza refaça o processo");
     }
-
-    /*@PostMapping("/buscaAlteracoesLimitePorLoja")
-    public ModelAndView buscaAlteracoesLimitePorLoja(String status, @Nullable String cpfCnpj,
-                                                     @Nullable String dataSolicitadoInicio,
-                                                     @Nullable String dataSolicitadoFim,
-                                                     HttpServletRequest httpServletRequest) {
-        if ((cpfCnpj == null || cpfCnpj.equals("")) && (dataSolicitadoInicio == null || dataSolicitadoInicio.equals("")) && (status == null || status.equals(""))) {
-            return alteraLimiteService.buscaListaAlterarLimite(httpServletRequest, Optional.of(Integer.valueOf(lojaSelecionada)), false, Optional.empty(), Optional.empty(), Optional.empty()).get();
-        } else {
-            List<Pedido> pedidos = pedidoService.findAll();
-            return new ModelAndView("lista-pedidos").addObject("pedidos", pedidos);
-        }
-    }*/
 
 }

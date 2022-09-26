@@ -33,7 +33,7 @@ public class PedidoItemController {
                 }
                 return ResponseEntity.ok(opPedidoItem.get());
             } catch (DataIntegrityViolationException ex){
-                throw new BadRequestException("Erro ao salvar item pedido, id do pedido invalido - Pedido não existe / Foreign Key Constraint Violation");
+                throw new BadRequestException("Erro ao salvar item pedido, id do pedido invalido - Pedido ou Produto ID informado não existe / Foreign Key Constraint Violation");
             }
         }
         throw new BadRequestException("Item desativado não pode ser adicionado a pedido");
@@ -63,9 +63,13 @@ public class PedidoItemController {
     }
 
     @GetMapping("/all/{page}")
-    ResponseEntity<List<PedidoItem>> findAll(@PathVariable int page) {
+    ResponseEntity<List<PedidoItem>> findAll(@PathVariable int page, @RequestParam(required = false) Double qtde) {
         Page<PedidoItem> pedidoItemPage;
-        pedidoItemPage = pedidoItemService.findAll(PageUtil.getPageable(page));
+        if(qtde != null){
+            pedidoItemPage = pedidoItemService.findAllPorQuantidade(qtde, PageUtil.getPageable(page));
+        } else {
+            pedidoItemPage = pedidoItemService.findAll(PageUtil.getPageable(page));
+        }
         return ResponseEntity.ok(pedidoItemPage.getContent());
     }
 
