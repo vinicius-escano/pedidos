@@ -1,15 +1,15 @@
 package com.application.pedidoapi.repository;
 
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.EntityManager;
+
+import org.springframework.stereotype.Repository;
+
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.model.QPedidoItem;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
-
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class PedidoItemRepository {

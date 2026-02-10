@@ -1,12 +1,16 @@
 package com.application.pedidoapi.dto;
 
-import com.application.pedidoapi.enums.Tipo;
-import lombok.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.type.UUIDCharType;
-
-import javax.persistence.*;
 import java.util.UUID;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import com.application.pedidoapi.enums.Tipo;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Getter

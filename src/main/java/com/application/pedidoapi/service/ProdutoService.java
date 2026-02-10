@@ -1,19 +1,20 @@
 package com.application.pedidoapi.service;
 
-import com.application.pedidoapi.enums.Tipo;
-import com.application.pedidoapi.model.Pedido;
-import com.application.pedidoapi.model.PedidoItem;
-import com.application.pedidoapi.model.Produto;
-import com.application.pedidoapi.repository.ProdutoJPARepository;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.application.pedidoapi.enums.Tipo;
+import com.application.pedidoapi.model.Pedido;
+import com.application.pedidoapi.model.PedidoItem;
+import com.application.pedidoapi.model.Produto;
+import com.application.pedidoapi.repository.ProdutoJPARepository;
 
 @Service
 public class ProdutoService {

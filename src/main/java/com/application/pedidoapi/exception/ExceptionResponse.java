@@ -1,9 +1,9 @@
 package com.application.pedidoapi.exception;
 
-import org.springframework.http.HttpStatus;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import org.springframework.http.HttpStatus;
 
 public class ExceptionResponse implements Serializable {
 

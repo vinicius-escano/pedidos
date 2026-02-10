@@ -1,10 +1,26 @@
 package com.application.pedidoapi.model;
 
-import com.application.pedidoapi.enums.Tipo;
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+import com.application.pedidoapi.enums.Tipo;
+import com.application.pedidoapi.enums.UnidadeMedida;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @AllArgsConstructor
@@ -37,6 +53,10 @@ public class Produto {
 
     @Column(name = "quantidade_disponivel")
     private Double quantidadeDisponivel;
+    
+    @Column(name = "unidade_medida")
+    @Enumerated(EnumType.STRING)
+    private UnidadeMedida unidadeMedida;
 
     @Column(name = "ativo")
     private boolean ativo = true;
