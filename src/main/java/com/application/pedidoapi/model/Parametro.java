@@ -35,6 +35,9 @@ public class Parametro {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
+	@Column(name = "codigo")
+	private Integer codigo;
+	
 	@OneToOne
 	@JoinColumn(name = "empresa", foreignKey = @ForeignKey(name = "fk_parametro_empresa"))
 	private Empresa empresa;

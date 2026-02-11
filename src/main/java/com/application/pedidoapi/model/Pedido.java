@@ -28,6 +28,9 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column(name = "codigo")
+	private Integer codigo;
+    
     @Column(name = "cpf_cpnj_comprador")
     private String cpfCnpjComprador;
 

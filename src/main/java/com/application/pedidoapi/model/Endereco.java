@@ -28,6 +28,9 @@ public class Endereco {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
+	@Column(name = "codigo")
+	private Integer codigo;
+	
 	@Column(name = "numero")
 	private String numero;
 	

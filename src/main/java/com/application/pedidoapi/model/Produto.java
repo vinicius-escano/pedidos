@@ -35,7 +35,10 @@ public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
+    
+    @Column(name = "codigo")
+	private Integer codigo;
+    
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
 

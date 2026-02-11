@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.application.pedidoapi.model.Pedido;
 import com.application.pedidoapi.model.PedidoItem;
 import com.application.pedidoapi.service.PedidoItemService;
+import com.application.pedidoapi.service.PedidoService;
 
 @RestController
 @RequestMapping("/api/pedido-items")
@@ -25,6 +27,9 @@ public class PedidoItemRestController {
 
     @Autowired
     private PedidoItemService pedidoItemService;
+
+    @Autowired
+    private PedidoService pedidoService;
 
     @PostMapping
     public ResponseEntity<PedidoItem> create(@RequestBody PedidoItem pedidoItem) {
@@ -42,6 +47,16 @@ public class PedidoItemRestController {
     public ResponseEntity<List<PedidoItem>> list(@RequestParam(required = false, defaultValue = "0") int page) {
         List<PedidoItem> list = pedidoItemService.findAll();
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/pedido/{pedidoUuid}")
+    public ResponseEntity<List<PedidoItem>> listByPedido(@PathVariable UUID pedidoUuid) {
+        Optional<Pedido> opPedido = pedidoService.findById(pedidoUuid);
+        if (opPedido.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<PedidoItem> itens = pedidoItemService.findAllByPedidoId(opPedido.get());
+        return ResponseEntity.ok(itens);
     }
 
     @PutMapping("/{id}")

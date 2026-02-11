@@ -30,7 +30,10 @@ public class Empresa {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-
+	
+	@Column(name = "codigo")
+	private Integer codigo;
+	
 	@Column(name = "nome")
 	private String nome;
 	

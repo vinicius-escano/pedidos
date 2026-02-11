@@ -30,6 +30,9 @@ public class PedidoItem{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column(name = "codigo")
+	private Integer codigo;
+    
     @ManyToOne
     @JoinColumn(name = "codigo_pedido",foreignKey = @ForeignKey(name = "fk_pedidoitem_pedido"))
     private Pedido pedido;
